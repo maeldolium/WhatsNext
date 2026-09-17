@@ -1,60 +1,68 @@
 import "./style.css";
-import heroImg from "./assets/hero.png";
-import typescriptLogo from "./assets/typescript.svg";
-import viteLogo from "./assets/vite.svg";
-import { setupCounter } from "./counter.ts";
 
-document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+import { mockWatchlistStore as store } from "./store/store.mock.ts";
 
-<div class="ticks"></div>
+// Page de test temporaire du store, en attendant le vrai rendu (partie B).
+// Pour repartir des données de démo : vider localStorage dans les DevTools.
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+function getElement(selector: string): Element {
+	const element = document.querySelector(selector);
+	if (!element) throw new Error(`Élément ${selector} introuvable`);
+	return element;
+}
 
-<div class="ticks"></div>
-<section id="spacer"></section>
+getElement("#app").innerHTML = `
+	<h1>WhatsNext — test du store</h1>
+	<p>Ouvre la console (F12) pour voir les événements. Recharge la page : les données persistent.</p>
+	<p>
+		<button id="add">Ajouter un film</button>
+		<button id="rate">Noter le dernier 5/5</button>
+		<button id="favorite">Favori du dernier</button>
+		<button id="complete">Terminer le dernier</button>
+		<button id="delete">Supprimer le dernier</button>
+	</p>
+	<pre id="output"></pre>
 `;
 
-setupCounter(document.querySelector<HTMLButtonElement>("#counter")!);
+const output = getElement("#output");
+
+// Ici on réaffiche toute la liste à chaque événement : c'est acceptable pour un test,
+// mais le vrai rendu (partie B) ne devra mettre à jour que l'élément concerné.
+store.subscribe((event) => {
+	console.log(`[store] ${event.type}`, event);
+	output.textContent = JSON.stringify(store.getAll(), null, 2);
+});
+
+function lastItemId(): string | undefined {
+	return store.getAll().at(-1)?.id;
+}
+
+getElement("#add").addEventListener("click", () => {
+	store.addItem({
+		type: "movie",
+		title: `Film de test n°${store.getAll().length + 1}`,
+		cover: "https://placehold.co/300x450?text=Test",
+		releaseYear: 2024,
+		genres: ["Test"],
+	});
+});
+
+getElement("#rate").addEventListener("click", () => {
+	const id = lastItemId();
+	if (id) store.setRating(id, 5);
+});
+
+getElement("#favorite").addEventListener("click", () => {
+	const id = lastItemId();
+	if (id) store.toggleFavorite(id);
+});
+
+getElement("#complete").addEventListener("click", () => {
+	const id = lastItemId();
+	if (id) store.setStatus(id, "completed");
+});
+
+getElement("#delete").addEventListener("click", () => {
+	const id = lastItemId();
+	if (id) store.deleteItem(id);
+});

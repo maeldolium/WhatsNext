@@ -2,6 +2,10 @@ import "./style.css";
 import "./styles/layout.css";
 
 import { mockWatchlistStore as store } from "./store/store.mock.ts";
+import { mountWatchlist } from "./ui/watchlist.ts";
+
+// Affiche la watchlist et la synchronise avec le store (partie B)
+mountWatchlist(store);
 
 // Page de test temporaire du store, en attendant le vrai rendu (partie B).
 // Pour repartir des données de démo : vider localStorage dans les DevTools.

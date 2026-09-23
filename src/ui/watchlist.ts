@@ -1,5 +1,6 @@
 import type { StoreEvent, Unsubscribe, WatchlistStore } from "../types/store.ts";
 import type { WatchlistItem } from "../types/watchlist.ts";
+import { playAnimation } from "../utils/animation.ts";
 import { getElement } from "../utils/dom.ts";
 import { createCard, updateCard } from "./card.ts";
 import { compareItems, DEFAULT_VIEW, matchesView, type ViewState } from "./view.ts";
@@ -44,12 +45,16 @@ export function mountWatchlist(
 		return card;
 	}
 
-	// Seul endroit qui retire une carte : c'est ici que viendra se brancher l'animation de sortie
+	// Seul endroit qui retire une carte. Elle quitte tout de suite la Map (elle n'existe plus
+	// pour le reste du code), mais reste dans le DOM le temps de son animation de sortie.
 	function removeCard(id: string): void {
 		const card = cards.get(id);
+		if (!card) return;
 		if (card === openMenuCard) openMenuCard = null;
-		card?.remove();
 		cards.delete(id);
+		// inert : la carte qui disparaît n'est plus cliquable ni atteignable au clavier
+		card.inert = true;
+		void playAnimation(card, "card--leaving").then(() => card.remove());
 	}
 
 	// --- Menu « ⋯ » ---
@@ -149,11 +154,17 @@ export function mountWatchlist(
 		}
 		if (openMenuCard?.hidden) closeOpenMenu();
 
-		// 2. Réordonner : on ne déplace que les cartes qui ne sont pas à leur place
+		// 2. Réordonner : on ne déplace que les cartes qui ne sont pas à leur place.
+		// "order" suit l'ordre actuel du DOM, sans les cartes en train de sortir (animation).
+		const order = [...list.children].filter(
+			(child) => !child.classList.contains("card--leaving"),
+		);
 		visibleItems.forEach((item, index) => {
 			const card = cards.get(item.id);
-			const cardAtIndex = list.children[index] ?? null;
-			if (card && card !== cardAtIndex) list.insertBefore(card, cardAtIndex);
+			if (!card || order[index] === card) return;
+			list.insertBefore(card, order[index] ?? null);
+			order.splice(order.indexOf(card), 1);
+			order.splice(index, 0, card);
 		});
 
 		// 3. Messages : « vide » s'il n'y a aucun élément, « aucun résultat » si tout est filtré
@@ -172,12 +183,17 @@ export function mountWatchlist(
 				cards.clear();
 				list.replaceChildren(...event.items.map(addCard));
 				break;
-			case "add":
-				list.prepend(addCard(event.item));
+			case "add": {
+				const card = addCard(event.item);
+				list.prepend(card);
+				void playAnimation(card, "card--entering");
 				break;
+			}
 			case "update": {
 				const card = cards.get(event.item.id);
-				if (card) updateCard(card, event.item);
+				if (!card) break;
+				updateCard(card, event.item);
+				void playAnimation(card, "card--updated");
 				break;
 			}
 			case "delete":

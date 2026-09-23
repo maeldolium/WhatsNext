@@ -82,11 +82,24 @@ export function mountWatchlist(
 
 	// --- Actions ---
 
-	function confirmAndDelete(card: HTMLElement, id: string): void {
+	function confirmAndDelete(card: HTMLLIElement, id: string): void {
 		const title = getElement(".card__title", HTMLHeadingElement, card).textContent;
-		if (window.confirm(`Supprimer « ${title} » de ta collection ?`)) {
-			store.deleteItem(id);
-		}
+		if (!window.confirm(`Supprimer « ${title} » de ta collection ?`)) return;
+
+		// Le bouton qui avait le focus va disparaître : on repère une carte voisine AVANT la
+		// suppression, pour y placer le focus ensuite (sinon il retombe au début de la page).
+		const visibleCards = [
+			...list.querySelectorAll<HTMLLIElement>(".card:not([hidden]):not(.card--leaving)"),
+		];
+		const index = visibleCards.indexOf(card);
+		const neighbour = visibleCards[index + 1] ?? visibleCards[index - 1];
+
+		store.deleteItem(id);
+
+		const focusTarget = neighbour
+			? getElement(".card__favorite", HTMLButtonElement, neighbour)
+			: getElement(".page-header__add", HTMLButtonElement);
+		focusTarget.focus();
 	}
 
 	// Délégation : UN seul écouteur pour tous les boutons de toutes les cartes.
@@ -123,8 +136,8 @@ export function mountWatchlist(
 		}
 	}
 
-	// Un clic n'importe où en dehors du menu ouvert le referme
-	function handleDocumentClick(event: MouseEvent): void {
+	// Un clic OU un focus clavier (Tab) en dehors de la carte au menu ouvert le referme
+	function handleOutsideInteraction(event: Event): void {
 		if (openMenuCard && event.target instanceof Node && !openMenuCard.contains(event.target)) {
 			closeOpenMenu();
 		}
@@ -205,7 +218,8 @@ export function mountWatchlist(
 	}
 
 	list.addEventListener("click", handleListClick);
-	document.addEventListener("click", handleDocumentClick);
+	document.addEventListener("click", handleOutsideInteraction);
+	document.addEventListener("focusin", handleOutsideInteraction);
 	document.addEventListener("keydown", handleDocumentKeydown);
 
 	// À appeler en dernier : subscribe() envoie immédiatement l'événement "init"
@@ -219,7 +233,8 @@ export function mountWatchlist(
 		unmount() {
 			unsubscribe();
 			list.removeEventListener("click", handleListClick);
-			document.removeEventListener("click", handleDocumentClick);
+			document.removeEventListener("click", handleOutsideInteraction);
+			document.removeEventListener("focusin", handleOutsideInteraction);
 			document.removeEventListener("keydown", handleDocumentKeydown);
 		},
 	};

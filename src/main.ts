@@ -2,10 +2,19 @@ import "./style.css";
 import "./styles/layout.css";
 
 import { mockWatchlistStore as store } from "./store/store.mock.ts";
+import { mountPageHeader } from "./ui/header.ts";
+import { openModal } from "./ui/modal.ts";
 import { mountWatchlist } from "./ui/watchlist.ts";
 
-// Affiche la watchlist et la synchronise avec le store (partie B)
-mountWatchlist(store);
+// Bouton « Ajouter » : ouvre la fenêtre (le formulaire de C viendra s'y afficher)
+mountPageHeader(() => openModal("Ajouter à la collection"));
+
+// Affiche la watchlist et la synchronise avec le store (partie B).
+// TEMPORAIRE : en attendant le formulaire de C, « Modifier » ouvre seulement la fenêtre.
+mountWatchlist(store, (id) => {
+	console.info("Édition demandée pour", id);
+	openModal("Modifier l'élément");
+});
 
 // Page de test temporaire du store, en attendant le vrai rendu (partie B).
 // Pour repartir des données de démo : vider localStorage dans les DevTools.

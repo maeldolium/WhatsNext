@@ -1,4 +1,5 @@
 import "./style.css";
+import "./styles/layout.css";
 
 import { mockWatchlistStore as store } from "./store/store.mock.ts";
 

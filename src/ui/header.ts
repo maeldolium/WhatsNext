@@ -1,6 +1,6 @@
 import { getElement } from "../utils/dom.ts";
 
-// En-tête de la vue : pour l'instant, seulement le bouton « Ajouter ».
+// Bouton « Ajouter » de l'en-tête : onAdd décide de ce qu'il ouvre
 export function mountPageHeader(onAdd: () => void): void {
 	getElement(".page-header__add", HTMLButtonElement).addEventListener("click", onAdd);
 }

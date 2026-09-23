@@ -2,13 +2,31 @@ import type { StoreEvent, Unsubscribe, WatchlistStore } from "../types/store.ts"
 import type { WatchlistItem } from "../types/watchlist.ts";
 import { getElement } from "../utils/dom.ts";
 import { createCard, updateCard } from "./card.ts";
+import { compareItems, DEFAULT_VIEW, matchesView, type ViewState } from "./view.ts";
 
-// Affiche la watchlist, la garde synchronisée avec le store et gère les clics sur les cartes.
-// onEdit : fonction appelée quand l'utilisateur veut modifier un élément (fournie par le formulaire de C).
-// Renvoie une fonction qui démonte tout (désabonnement + retrait des écouteurs).
-export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => void): Unsubscribe {
+export interface WatchlistOptions {
+	// Appelée quand l'utilisateur veut modifier un élément (formulaire de C)
+	onEdit: (id: string) => void;
+	// Appelée après chaque mise à jour de l'affichage (compteurs, sous-titre…)
+	onViewApplied: (items: WatchlistItem[], visibleCount: number) => void;
+}
+
+export interface WatchlistController {
+	// Applique de nouveaux filtres / un nouveau tri à la liste
+	setView(view: ViewState): void;
+	// Démonte tout : désabonnement du store + retrait des écouteurs
+	unmount: Unsubscribe;
+}
+
+// Affiche la watchlist, la garde synchronisée avec le store, gère les clics sur les cartes
+// et applique les filtres et le tri choisis par l'utilisateur.
+export function mountWatchlist(
+	store: WatchlistStore,
+	options: WatchlistOptions,
+): WatchlistController {
 	const list = getElement(".watchlist__list", HTMLUListElement);
 	const emptyMessage = getElement(".watchlist__message--empty", HTMLParagraphElement);
+	const noResultMessage = getElement(".watchlist__message--no-result", HTMLParagraphElement);
 
 	// Associe l'id de chaque élément à sa carte dans le DOM :
 	// retrouver une carte est immédiat, sans parcourir la page.
@@ -16,6 +34,9 @@ export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => vo
 
 	// Carte dont le menu « ⋯ » est ouvert (un seul à la fois)
 	let openMenuCard: HTMLElement | null = null;
+
+	// Filtres et tri choisis par l'utilisateur
+	let view: ViewState = DEFAULT_VIEW;
 
 	function addCard(item: WatchlistItem): HTMLLIElement {
 		const card = createCard(item);
@@ -88,7 +109,7 @@ export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => vo
 				break;
 			case "edit":
 				closeOpenMenu();
-				onEdit(id);
+				options.onEdit(id);
 				break;
 			case "delete":
 				closeOpenMenu();
@@ -112,14 +133,44 @@ export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => vo
 		toggle.focus();
 	}
 
+	// --- Filtres et tri ---
+
+	// Applique la vue aux cartes EXISTANTES : on masque et on réordonne, on ne recrée rien
+	function applyView(): void {
+		const items = store.getAll();
+		const visibleItems = items
+			.filter((item) => matchesView(item, view))
+			.sort((a, b) => compareItems(a, b, view.sort));
+		const visibleIds = new Set(visibleItems.map((item) => item.id));
+
+		// 1. Masquer / afficher
+		for (const [id, card] of cards) {
+			card.hidden = !visibleIds.has(id);
+		}
+		if (openMenuCard?.hidden) closeOpenMenu();
+
+		// 2. Réordonner : on ne déplace que les cartes qui ne sont pas à leur place
+		visibleItems.forEach((item, index) => {
+			const card = cards.get(item.id);
+			const cardAtIndex = list.children[index] ?? null;
+			if (card && card !== cardAtIndex) list.insertBefore(card, cardAtIndex);
+		});
+
+		// 3. Messages : « vide » s'il n'y a aucun élément, « aucun résultat » si tout est filtré
+		emptyMessage.hidden = items.length > 0;
+		noResultMessage.hidden = items.length === 0 || visibleItems.length > 0;
+
+		options.onViewApplied(items, visibleItems.length);
+	}
+
 	// --- Synchronisation avec le store ---
 
 	function handleStoreEvent(event: StoreEvent): void {
 		switch (event.type) {
 			case "init":
-				// Seul cas où l'on construit toute la liste. Plus récents en premier.
+				// Seul cas où l'on construit toute la liste (l'ordre est ensuite fixé par applyView)
 				cards.clear();
-				list.replaceChildren(...event.items.toReversed().map(addCard));
+				list.replaceChildren(...event.items.map(addCard));
 				break;
 			case "add":
 				list.prepend(addCard(event.item));
@@ -133,7 +184,8 @@ export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => vo
 				removeCard(event.item.id);
 				break;
 		}
-		emptyMessage.hidden = cards.size > 0;
+		// Après chaque changement : filtres, tri, messages et compteurs à jour
+		applyView();
 	}
 
 	list.addEventListener("click", handleListClick);
@@ -143,10 +195,16 @@ export function mountWatchlist(store: WatchlistStore, onEdit: (id: string) => vo
 	// À appeler en dernier : subscribe() envoie immédiatement l'événement "init"
 	const unsubscribe = store.subscribe(handleStoreEvent);
 
-	return () => {
-		unsubscribe();
-		list.removeEventListener("click", handleListClick);
-		document.removeEventListener("click", handleDocumentClick);
-		document.removeEventListener("keydown", handleDocumentKeydown);
+	return {
+		setView(nextView) {
+			view = nextView;
+			applyView();
+		},
+		unmount() {
+			unsubscribe();
+			list.removeEventListener("click", handleListClick);
+			document.removeEventListener("click", handleDocumentClick);
+			document.removeEventListener("keydown", handleDocumentKeydown);
+		},
 	};
 }

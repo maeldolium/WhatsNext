@@ -12,45 +12,44 @@
       <aside class="app__sidebar">
         <!-- Emplacement du logo à ajouter -->
         <div class="brand">
-          <div class="brand__logo" aria-hidden="true"></div>
+          <div class="brand__logo"></div>
           <p class="brand__name">Next Up</p>
           <p class="brand__tagline">Watchlist</p>
         </div>
 
-        <!-- Navigation entre les catégories -->
-        <nav class="nav" aria-label="Catégories">
+        <nav class="nav">
           <ul class="nav__list">
             <li class="nav__item">
-              <button class="nav__button nav__button--active" type="button" data-filter="all" aria-pressed="true">
-                <svg class="nav__icon" aria-hidden="true"><use href="/sprite.svg#icon-collection"></use></svg>
+              <button class="nav__button nav__button--active" type="button" data-filter="all">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-collection"></use></svg>
                 <span class="nav__label">Ma collection</span>
                 <span class="nav__count"></span>
               </button>
             </li>
             <li class="nav__item">
-              <button class="nav__button" type="button" data-filter="movie" aria-pressed="false">
-                <svg class="nav__icon" aria-hidden="true"><use href="/sprite.svg#icon-movie"></use></svg>
+              <button class="nav__button" type="button" data-filter="movie">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-movie"></use></svg>
                 <span class="nav__label">Films</span>
                 <span class="nav__count"></span>
               </button>
             </li>
             <li class="nav__item">
-              <button class="nav__button" type="button" data-filter="series" aria-pressed="false">
-                <svg class="nav__icon" aria-hidden="true"><use href="/sprite.svg#icon-series"></use></svg>
+              <button class="nav__button" type="button" data-filter="series">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-series"></use></svg>
                 <span class="nav__label">Séries</span>
                 <span class="nav__count"></span>
               </button>
             </li>
             <li class="nav__item">
-              <button class="nav__button" type="button" data-filter="game" aria-pressed="false">
-                <svg class="nav__icon" aria-hidden="true"><use href="/sprite.svg#icon-game"></use></svg>
+              <button class="nav__button" type="button" data-filter="game">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-game"></use></svg>
                 <span class="nav__label">Jeux</span>
                 <span class="nav__count"></span>
               </button>
             </li>
             <li class="nav__item">
-              <button class="nav__button" type="button" data-filter="favorites" aria-pressed="false">
-                <svg class="nav__icon" aria-hidden="true"><use href="/sprite.svg#icon-star"></use></svg>
+              <button class="nav__button" type="button" data-filter="favorites">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-star"></use></svg>
                 <span class="nav__label">Favoris</span>
                 <span class="nav__count"></span>
               </button>
@@ -58,54 +57,48 @@
           </ul>
         </nav>
 
-        <!-- Choix du thème -->
         <fieldset class="theme-switch">
           <legend class="theme-switch__legend">Thème d'affichage</legend>
           <div class="theme-switch__options">
             <label class="theme-switch__option">
               <input class="theme-switch__input" type="radio" name="theme" value="light" />
-              <svg class="theme-switch__icon" aria-hidden="true"><use href="/sprite.svg#icon-sun"></use></svg>
+              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-sun"></use></svg>
               <span class="theme-switch__label">Clair</span>
             </label>
             <label class="theme-switch__option">
               <input class="theme-switch__input" type="radio" name="theme" value="dark" />
-              <svg class="theme-switch__icon" aria-hidden="true"><use href="/sprite.svg#icon-moon"></use></svg>
+              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-moon"></use></svg>
               <span class="theme-switch__label">Sombre</span>
             </label>
             <label class="theme-switch__option">
               <input class="theme-switch__input" type="radio" name="theme" value="auto" checked />
-              <svg class="theme-switch__icon" aria-hidden="true"><use href="/sprite.svg#icon-auto"></use></svg>
+              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-auto"></use></svg>
               <span class="theme-switch__label">Auto</span>
             </label>
           </div>
         </fieldset>
       </aside>
 
-            <!-- Zone principale -->
       <main class="app__main">
-        <!-- En-tête de la vue -->
         <header class="page-header">
           <div class="page-header__text">
             <h1 class="page-header__title">Ma collection</h1>
-            <p class="page-header__subtitle" aria-live="polite"></p>
+            <p class="page-header__subtitle"></p>
           </div>
           <button class="page-header__add" type="button">
-            <svg class="page-header__add-icon" aria-hidden="true"><use href="/sprite.svg#icon-plus"></use></svg>
+            <svg class="page-header__add-icon"><use href="/sprite.svg#icon-plus"></use></svg>
             <span>Ajouter</span>
           </button>
         </header>
 
-        <!-- Recherche, tri et filtres -->
-        <section class="toolbar" aria-label="Recherche et filtres">
+        <section class="toolbar">
           <div class="toolbar__row">
             <div class="toolbar__search">
-              <label class="visually-hidden" for="search-input">Rechercher un titre</label>
-              <svg class="toolbar__search-icon" aria-hidden="true"><use href="/sprite.svg#icon-search"></use></svg>
+              <svg class="toolbar__search-icon"><use href="/sprite.svg#icon-search"></use></svg>
               <input class="toolbar__search-input" id="search-input" type="search" name="search" placeholder="Rechercher un titre…" autocomplete="off" />
             </div>
             <div class="toolbar__sort">
-              <label class="visually-hidden" for="sort-select">Trier par</label>
-              <svg class="toolbar__sort-icon" aria-hidden="true"><use href="/sprite.svg#icon-sort"></use></svg>
+              <svg class="toolbar__sort-icon"><use href="/sprite.svg#icon-sort"></use></svg>
               <select class="toolbar__sort-select" id="sort-select" name="sort">
                 <option value="dateAdded">Date d'ajout</option>
                 <option value="title">Titre</option>
@@ -122,19 +115,17 @@
             </select>
           </div>
 
-          <div class="status-filter" role="group" aria-label="Filtrer par statut">
-            <button class="status-filter__button status-filter__button--active" type="button" data-status="all" aria-pressed="true">Tous</button>
-            <button class="status-filter__button" type="button" data-status="planned" aria-pressed="false">À découvrir</button>
-            <button class="status-filter__button" type="button" data-status="in_progress" aria-pressed="false">En cours</button>
-            <button class="status-filter__button" type="button" data-status="completed" aria-pressed="false">Terminé</button>
+          <div class="status-filter">
+            <button class="status-filter__button status-filter__button--active" type="button" data-status="all">Tous</button>
+            <button class="status-filter__button" type="button" data-status="planned">À découvrir</button>
+            <button class="status-filter__button" type="button" data-status="in_progress">En cours</button>
+            <button class="status-filter__button" type="button" data-status="completed">Terminé</button>
           </div>
         </section>
 
         <hr class="app__separator" />
 
-        <!-- Liste des éléments -->
-        <section class="watchlist" aria-labelledby="watchlist-title">
-          <h2 class="visually-hidden" id="watchlist-title">Éléments de la collection</h2>
+        <section class="watchlist">
           <ul class="watchlist__list"></ul>
           <p class="watchlist__message watchlist__message--empty" hidden>Ta collection est vide. Ajoute ton premier film, ta première série ou ton premier jeu !</p>
           <p class="watchlist__message watchlist__message--no-result" hidden>Aucun élément ne correspond à ta recherche.</p>
@@ -142,12 +133,12 @@
       </main>
 
       <!-- Fenêtre d'ajout / modification en attente du formulaire -->
-      <dialog class="modal" aria-labelledby="modal-title">
+      <dialog class="modal">
         <div class="modal__header">
-          <h2 class="modal__title" id="modal-title">Ajouter à la collection</h2>
+          <h2 class="modal__title">Ajouter à la collection</h2>
           <form method="dialog">
-            <button class="modal__close" type="submit" aria-label="Fermer">
-              <svg class="modal__close-icon" aria-hidden="true"><use href="/sprite.svg#icon-close"></use></svg>
+            <button class="modal__close" type="submit">
+              <svg class="modal__close-icon"><use href="/sprite.svg#icon-close"></use></svg>
             </button>
           </form>
         </div>

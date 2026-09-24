@@ -1,6 +1,6 @@
 const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
 
-// Récupère un élément qui DOIT exister dans la page, en vérifiant son type.
+// Lance une erreur si l'élément est absent ou n'est pas du type attendu
 export function getElement<T extends Element>(
 	selector: string,
 	type: new () => T,
@@ -13,7 +13,6 @@ export function getElement<T extends Element>(
 	return element;
 }
 
-// Crée un élément HTML avec sa classe BEM et, si besoin, son texte.
 export function createElement<K extends keyof HTMLElementTagNameMap>(
 	tag: K,
 	className: string,
@@ -25,11 +24,9 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
 	return element;
 }
 
-// Crée une icône qui pointe vers un symbole du sprite (public/sprite.svg).
 export function createIcon(name: string, className: string): SVGSVGElement {
 	const svg = document.createElementNS(SVG_NAMESPACE, "svg");
 	svg.setAttribute("class", className);
-	svg.setAttribute("aria-hidden", "true");
 
 	const use = document.createElementNS(SVG_NAMESPACE, "use");
 	use.setAttribute("href", `/sprite.svg#${name}`);

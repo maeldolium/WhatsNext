@@ -1,7 +1,7 @@
 import type { WatchlistItem, WatchlistStatus } from "../types/watchlist.ts";
 
-// Catégories de la navigation latérale ("series" en attente de l'ajout au modèle par A)
-export type Category = "all" | "movie" | "series" | "game" | "favorites";
+// Catégories de la navigation latérale
+export type Category = "all" | "movie" | "tv_show" | "game" | "favorites";
 export type StatusFilter = "all" | WatchlistStatus;
 export type SortKey = "dateAdded" | "title" | "rating" | "releaseYear";
 
@@ -25,7 +25,7 @@ export const DEFAULT_VIEW: ViewState = {
 export const CATEGORY_TITLES: Record<Category, string> = {
 	all: "Ma collection",
 	movie: "Films",
-	series: "Séries",
+	tv_show: "Séries",
 	game: "Jeux",
 	favorites: "Favoris",
 };

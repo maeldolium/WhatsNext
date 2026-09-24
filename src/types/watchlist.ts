@@ -1,4 +1,4 @@
-export type WatchlistItemType = "movie" | "game";
+export type WatchlistItemType = "movie" | "tv_show" | "game";
 
 export type WatchlistStatus = "planned" | "in_progress" | "completed";
 

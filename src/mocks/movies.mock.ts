@@ -31,7 +31,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000003",
-		type: "movie",
+		type: "tv_show",
 		title: "The Bear",
 		cover: "https://placehold.co/300x450?text=The+Bear",
 		releaseYear: 2022,
@@ -45,7 +45,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000004",
-		type: "movie",
+		type: "tv_show",
 		title: "Arcane",
 		cover: "https://placehold.co/300x450?text=Arcane",
 		releaseYear: 2021,
@@ -73,7 +73,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000006",
-		type: "movie",
+		type: "tv_show",
 		title: "Severance",
 		cover: "https://placehold.co/300x450?text=Severance",
 		releaseYear: 2022,
@@ -101,7 +101,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000008",
-		type: "movie",
+		type: "tv_show",
 		title: "True Detective: Night Country",
 		cover: "https://placehold.co/300x450?text=True+Detective",
 		releaseYear: 2024,
@@ -129,7 +129,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000010",
-		type: "movie",
+		type: "tv_show",
 		title: "Shōgun",
 		cover: "https://placehold.co/300x450?text=Shogun",
 		releaseYear: 2024,
@@ -157,7 +157,7 @@ export const moviesMock: WatchlistItem[] = [
 	},
 	{
 		id: "8f14e45f-ceea-4a8f-8a3f-0000000012",
-		type: "movie",
+		type: "tv_show",
 		title: "Fallout",
 		cover: "https://placehold.co/300x450?text=Fallout",
 		releaseYear: 2024,

@@ -8,10 +8,12 @@ export const STATUS_LABELS: Record<WatchlistStatus, string> = {
 
 export const TYPE_LABELS: Record<WatchlistItemType, string> = {
 	movie: "Film",
+	tv_show: "Série",
 	game: "Jeu",
 };
 
 export const TYPE_ICONS: Record<WatchlistItemType, string> = {
 	movie: "icon-movie",
+	tv_show: "icon-series",
 	game: "icon-game",
 };

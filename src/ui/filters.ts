@@ -33,7 +33,19 @@ export function mountFilters(onChange: (view: ViewState) => void): FiltersContro
 	const genreSelect = getElement("#genre-select", HTMLSelectElement);
 
 	let view: ViewState = { ...DEFAULT_VIEW };
-	// Genres affichés dans le <select>, pour ne le reconstruire que s'ils changent
+
+	const initialStatusButton = [...statusButtons].find(
+	(button) => button.dataset.status === view.status,
+	);
+
+	if (initialStatusButton) {
+		setActiveButton(
+			statusButtons,
+			initialStatusButton,
+			"status-filter__button--active",
+		);
+	}
+		// Genres affichés dans le <select>, pour ne le reconstruire que s'ils changent
 	let genresKey = "";
 
 	function change(changes: Partial<ViewState>): void {

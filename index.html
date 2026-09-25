@@ -62,27 +62,29 @@
             </li>
           </ul>
         </nav>
-
-        <fieldset class="theme-switch">
-          <legend class="theme-switch__legend">Thème d'affichage</legend>
-          <div class="theme-switch__options">
-            <label class="theme-switch__option">
-              <input class="theme-switch__input" type="radio" name="theme" value="light" />
-              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-sun"></use></svg>
-              <span class="theme-switch__label">Clair</span>
-            </label>
-            <label class="theme-switch__option">
-              <input class="theme-switch__input" type="radio" name="theme" value="dark" />
-              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-moon"></use></svg>
-              <span class="theme-switch__label">Sombre</span>
-            </label>
-            <label class="theme-switch__option">
-              <input class="theme-switch__input" type="radio" name="theme" value="auto" checked />
-              <svg class="theme-switch__icon"><use href="/sprite.svg#icon-auto"></use></svg>
-              <span class="theme-switch__label">Auto</span>
-            </label>
-          </div>
-        </fieldset>
+        
+        <div class="sidebar-footer">
+          <fieldset class="theme-switch">
+            <legend class="theme-switch__legend">Thème d'affichage</legend>
+            <div class="theme-switch__options">
+              <label class="theme-switch__option">
+                <input class="theme-switch__input" type="radio" name="theme" value="light" />
+                <svg class="theme-switch__icon"><use href="/sprite.svg#icon-sun"></use></svg>
+                <span class="theme-switch__label">Clair</span>
+              </label>
+              <label class="theme-switch__option">
+                <input class="theme-switch__input" type="radio" name="theme" value="dark" />
+                <svg class="theme-switch__icon"><use href="/sprite.svg#icon-moon"></use></svg>
+                <span class="theme-switch__label">Sombre</span>
+              </label>
+              <label class="theme-switch__option">
+                <input class="theme-switch__input" type="radio" name="theme" value="auto" checked />
+                <svg class="theme-switch__icon"><use href="/sprite.svg#icon-auto"></use></svg>
+                <span class="theme-switch__label">Auto</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
       </aside>
 
       <main class="app__main">
@@ -147,7 +149,7 @@
         <div class="modal__header">
           <h2 class="modal__title">Ajouter à la collection</h2>
           <form method="dialog">
-            <button class="modal__close" type="submit">
+            <button class="modal__close" type="submit" aria-label="Fermer">
               <svg class="modal__close-icon"><use href="/sprite.svg#icon-close"></use></svg>
             </button>
           </form>

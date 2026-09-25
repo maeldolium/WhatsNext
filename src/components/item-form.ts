@@ -24,10 +24,24 @@ const TEMPLATE = `
 				${STATUS_OPTIONS}
 			</select>
 		</label>
-		<fieldset class="item-form__opinion">
-			<legend>Ton avis</legend>
-			<label>Note <input name="rating" type="number" min="0" max="5" step="1" value="0" /></label>
+		<!-- Avis : seulement pour un titre commencé (en cours ou terminé), voir updateOpinion() -->
+		<fieldset class="item-form__opinion">			
+		<legend>Ton avis</legend>
+			<div>
+				<span>Note</span>
+				<input name="rating" type="hidden" value="0" />
+				<div class="item-form__stars" role="group" aria-label="Note sur 5">
+					${[1, 2, 3, 4, 5].map((note) => `
+						<button type="button" class="card__star" data-note="${note}" aria-label="${note} sur 5" aria-pressed="false">
+							<svg class="card__star-icon" aria-hidden="true">
+								<use href="/sprite.svg#icon-star"></use>
+							</svg>
+						</button>
+					`).join("")}
+				</div>
+			</div>
 			<label><input name="favorite" type="checkbox" /> Favori</label>
+		</fieldset>
 		</fieldset>
 		<label>Notes <textarea name="notes" maxlength="${NOTES_MAX_LENGTH}"></textarea></label>
 		<button class="item-form__submit" type="submit"></button>
@@ -72,7 +86,29 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	const ratingInput = getElement('[name="rating"]', HTMLInputElement, form);
 	const favoriteInput = getElement('[name="favorite"]', HTMLInputElement, form);
 	const notesInput = getElement('[name="notes"]', HTMLTextAreaElement, form);
+	const stars = form.querySelectorAll<HTMLButtonElement>("[data-note]");
 
+	// Colore les étoiles jusqu'à la note choisie
+	function updateStars(): void {
+		const rating = Number(ratingInput.value);
+
+		stars.forEach((star) => {
+			const note = Number(star.dataset.note);
+
+			star.classList.toggle("card__star--active", note <= rating);
+			star.setAttribute("aria-pressed", String(note === rating));
+		});
+	}
+
+	stars.forEach((star) => {
+		star.addEventListener("click", () => {
+			const note = star.dataset.note ?? "0";
+
+			// Recliquer sur la même étoile enlève la note
+			ratingInput.value = ratingInput.value === note ? "0" : note;
+			updateStars();
+		});
+	});
 	getElement(".item-form__submit", HTMLButtonElement, form).textContent = options.submitLabel;
 	form.hidden = true;
 
@@ -112,6 +148,8 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	return {
 		open(header, values) {
 			form.reset();
+			// Remet le champ caché à zéro pour un nouvel ajout.
+			ratingInput.value = "0";
 			// Pas d'image (chaîne vide) : on masque la balise plutôt qu'afficher une image cassée
 			cover.src = header.cover;
 			cover.hidden = header.cover === "";
@@ -127,7 +165,13 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 				favoriteInput.checked = values.favorite;
 				notesInput.value = values.notes;
 			}
+<<<<<<< HEAD
 			// Après reset(), le statut est « À découvrir » : l'avis doit être masqué
+=======
+			// Affiche les étoiles de la note enregistrée.
+			updateStars();
+			// Affiche ou masque l'avis selon le statut (« À découvrir » par défaut après reset)
+>>>>>>> e3151d5 (feat(ui): add styles)
 			updateOpinion();
 			form.hidden = false;
 			statusSelect.focus();

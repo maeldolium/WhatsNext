@@ -1,5 +1,6 @@
 import "./style.css";
 import "./styles/layout.css";
+import "./styles/discover.css";
 
 // Store de démonstration (données pré-remplies). Pour passer au vrai store, remplacer par :
 // import { watchlistStore as store } from "./store/store.ts";

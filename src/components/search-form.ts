@@ -1,3 +1,4 @@
+import { getErrorMessage } from "../api/http.ts";
 import { searchGames } from "../api/rawg.ts";
 import { searchMovies, searchTvShows } from "../api/tmdb.ts";
 import type { NewWatchlistItem, WatchlistStore } from "../types/store.ts";
@@ -170,7 +171,7 @@ export function mountSearchForm(
 		} catch (error) {
 			if (searchId !== lastSearchId) return;
 			console.error(error);
-			status.textContent = "La recherche a échoué, réessaie dans un instant.";
+			status.textContent = `La recherche a échoué. ${getErrorMessage(error)}`;
 		}
 	});
 

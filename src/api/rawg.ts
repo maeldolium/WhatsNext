@@ -1,5 +1,5 @@
 import type { RawgGameRaw, RawgResponse } from "../types/rawg.type";
-import { fetchJson } from "./http";
+import { fetchJson, requireApiKey } from "./http";
 
 const RAWG_BASE_URL = "https://api.rawg.io/api";
 // Clé lue depuis .env (seules les variables préfixées VITE_ sont exposées au front)
@@ -12,7 +12,7 @@ const RAWG_KEY = import.meta.env.VITE_RAWG_API_KEY;
 async function fetchGames(params: Record<string, string>): Promise<RawgGameRaw[]> {
 	// searchParams encode automatiquement les valeurs (espaces, accents, &...)
 	const url = new URL(`${RAWG_BASE_URL}/games`);
-	url.searchParams.set("key", RAWG_KEY);
+	url.searchParams.set("key", requireApiKey(RAWG_KEY, "VITE_RAWG_API_KEY"));
 	for (const [name, value] of Object.entries(params)) {
 		url.searchParams.set(name, value);
 	}

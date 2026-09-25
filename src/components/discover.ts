@@ -1,3 +1,4 @@
+import { getErrorMessage } from "../api/http.ts";
 import { getRecommendations, type Recommendation } from "../api/recommendations.ts";
 import type { NewWatchlistItem, WatchlistStore } from "../types/store.ts";
 import type { WatchlistItem, WatchlistItemType } from "../types/watchlist.ts";
@@ -98,7 +99,7 @@ export function mountDiscover(
 			list.replaceChildren(...recommendations.map(createRecommendationCard));
 		} catch (error) {
 			console.error(error);
-			status.textContent = "Impossible de charger les recommandations, réessaie plus tard.";
+			status.textContent = `Impossible de charger les recommandations. ${getErrorMessage(error)}`;
 		}
 	}
 

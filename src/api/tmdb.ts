@@ -1,5 +1,5 @@
 import type { TmdbMovieRaw, TmdbSearchResponse, TmdbTvShowRaw } from "../types/tmdb.type";
-import { fetchJson } from "./http";
+import { fetchJson, requireApiKey } from "./http";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 // Clé v3 lue depuis .env (seules les variables préfixées VITE_ sont exposées au front)
@@ -12,7 +12,7 @@ const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 async function fetchTmdbList<T>(path: string, params: Record<string, string>): Promise<T[]> {
 	// searchParams encode automatiquement les valeurs (espaces, accents, &...)
 	const url = new URL(`${TMDB_BASE_URL}${path}`);
-	url.searchParams.set("api_key", TMDB_KEY);
+	url.searchParams.set("api_key", requireApiKey(TMDB_KEY, "VITE_TMDB_API_KEY"));
 	url.searchParams.set("language", "fr-FR"); // titres et résumés en français
 	for (const [name, value] of Object.entries(params)) {
 		url.searchParams.set(name, value);

@@ -104,7 +104,10 @@ export function updateCard(card: HTMLElement, item: WatchlistItem): void {
 		createIcon(TYPE_ICONS[item.type], "card__type-icon"),
 		TYPE_LABELS[item.type],
 	);
-	getElement(".card__year", HTMLSpanElement, card).textContent = String(item.releaseYear);
+	// 0 = année inconnue (l'API n'en fournit pas) : on masque l'année plutôt qu'afficher « 0 »
+	const year = getElement(".card__year", HTMLSpanElement, card);
+	year.textContent = String(item.releaseYear);
+	year.hidden = item.releaseYear === 0;
 
 	const genres = getElement(".card__genres", HTMLParagraphElement, card);
 	genres.textContent = item.genres.join(" · ");

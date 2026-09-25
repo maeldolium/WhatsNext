@@ -4,6 +4,7 @@ import { searchMovies, searchTvShows } from "../api/tmdb.ts";
 import type { NewWatchlistItem, WatchlistStore } from "../types/store.ts";
 import type { WatchlistItemType } from "../types/watchlist.ts";
 import { TYPE_LABELS } from "../ui/labels.ts";
+import { isInCollection } from "../utils/collection.ts";
 import { createElement, getElement } from "../utils/dom.ts";
 import { normalizeRawgGame, normalizeTmdbMovie, normalizeTmdbTvShow } from "../utils/normalize.ts";
 import { mountItemForm } from "./item-form.ts";
@@ -136,7 +137,13 @@ export function mountSearchForm(
 		const button = createElement("button", "search-results__button");
 		button.type = "button";
 		button.append(cover, label);
-		button.addEventListener("click", () => openAddForm(item));
+		// Titre déjà dans la collection : on l'indique et on empêche de l'ajouter une 2e fois
+		if (isInCollection(item, store.getAll())) {
+			button.disabled = true;
+			button.append(createElement("span", "search-results__owned", "Dans ta collection"));
+		} else {
+			button.addEventListener("click", () => openAddForm(item));
+		}
 
 		const li = createElement("li", "search-results__item");
 		li.append(button);

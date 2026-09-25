@@ -5,6 +5,7 @@ import type {
 	WatchlistStore,
 } from "../types/store.ts";
 import type { WatchlistItem } from "../types/watchlist.ts";
+import { isInCollection } from "../utils/collection.ts";
 import { canHaveOpinion } from "../utils/status.ts";
 
 export interface StoreOptions {
@@ -121,6 +122,10 @@ export function createWatchlistStore(options: StoreOptions = {}): WatchlistStore
 
 		addItem(data) {
 			if (data.rating !== undefined) assertValidRating(data.rating);
+			// Pas de doublon : même règle que la recherche et « Découvrir » (utils/collection.ts)
+			if (isInCollection(data, items)) {
+				throw new Error(`« ${data.title} » est déjà dans la collection.`);
+			}
 			const now = new Date().toISOString();
 			const item = applyOpinionRule(
 				{

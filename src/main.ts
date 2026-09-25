@@ -4,10 +4,10 @@ import "./styles/layout.css";
 import { mountDiscover } from "./components/discover.ts";
 import { mountEditForm } from "./components/edit-form.ts";
 import { mountSearchForm } from "./components/search-form.ts";
-// Store de démonstration (données pré-remplies). Pour passer au vrai store, remplacer par :
-// import { watchlistStore as store } from "./store/store.ts";
-// (à faire quand le formulaire de C permettra d'ajouter des éléments : le vrai store démarre vide)
-import { mockWatchlistStore as store } from "./store/store.mock.ts";
+// Vrai store : la collection démarre vide et se remplit avec les titres ajoutés depuis
+// la recherche ou « Découvrir ». Pour tester avec des données de démonstration, remplacer par :
+// import { mockWatchlistStore as store } from "./store/store.mock.ts";
+import { watchlistStore as store } from "./store/store.ts";
 import { mountFilters } from "./ui/filters.ts";
 import { mountPageHeader, setPageSubtitle, setPageSummary, setPageTitle } from "./ui/header.ts";
 import { closeModal, openModal } from "./ui/modal.ts";

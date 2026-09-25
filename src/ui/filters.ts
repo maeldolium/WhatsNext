@@ -24,7 +24,8 @@ function setActiveButton(
 }
 
 export function mountFilters(onChange: (view: ViewState) => void): FiltersController {
-	const navButtons = document.querySelectorAll<HTMLButtonElement>(".nav__button");
+	// Seulement les boutons de catégorie : « Découvrir » (data-page) est géré par pages.ts
+	const navButtons = document.querySelectorAll<HTMLButtonElement>(".nav__button[data-filter]");
 	const statusButtons = document.querySelectorAll<HTMLButtonElement>(".status-filter__button");
 	const searchInput = getElement("#search-input", HTMLInputElement);
 	const sortSelect = getElement("#sort-select", HTMLSelectElement);
@@ -41,7 +42,7 @@ export function mountFilters(onChange: (view: ViewState) => void): FiltersContro
 
 	getElement(".nav__list", HTMLUListElement).addEventListener("click", (event) => {
 		if (!(event.target instanceof Element)) return;
-		const button = event.target.closest<HTMLButtonElement>(".nav__button");
+		const button = event.target.closest<HTMLButtonElement>(".nav__button[data-filter]");
 		if (!button) return;
 		setActiveButton(navButtons, button, "nav__button--active");
 		change({ category: button.dataset.filter as Category });

@@ -34,8 +34,9 @@ const TEMPLATE = `
 	<ul class="search-results"></ul>
 	<form class="add-form" hidden>
 		<img class="add-cover" alt="" width="100" />
-		<label>Titre <input name="title" required /></label>
-		<label>Année <input name="releaseYear" type="number" min="0" /></label>
+		<!-- Titre et année viennent de l'API : affichés en texte, pas modifiables -->
+		<h3 class="add-title"></h3>
+		<p class="add-year"></p>
 		<label>Statut
 			<select name="status">
 				${STATUS_OPTIONS}
@@ -89,8 +90,9 @@ export function mountSearchForm(
 	const results = getElement(".search-results", HTMLUListElement, container);
 	const addForm = getElement(".add-form", HTMLFormElement, container);
 	const addCover = getElement(".add-cover", HTMLImageElement, addForm);
-	const titleInput = getElement('[name="title"]', HTMLInputElement, addForm);
-	const yearInput = getElement('[name="releaseYear"]', HTMLInputElement, addForm);
+	const addTitle = getElement(".add-title", HTMLHeadingElement, addForm);
+	const addYear = getElement(".add-year", HTMLParagraphElement, addForm);
+	const statusSelect = getElement('[name="status"]', HTMLSelectElement, addForm);
 
 	// Résultat choisi par l'utilisateur, en attente de validation du mini-formulaire
 	let selected: NewWatchlistItem | null = null;
@@ -110,10 +112,13 @@ export function mountSearchForm(
 		// Pas d'image (chaîne vide) : on masque la balise plutôt qu'afficher une image cassée
 		addCover.src = item.cover;
 		addCover.hidden = item.cover === "";
-		titleInput.value = item.title;
-		yearInput.value = item.releaseYear ? String(item.releaseYear) : "";
+		// textContent : le titre vient de l'API, il ne doit pas être interprété comme du HTML
+		addTitle.textContent = item.title;
+		// Année inconnue (0) : on masque la ligne plutôt qu'afficher « 0 »
+		addYear.textContent = String(item.releaseYear);
+		addYear.hidden = item.releaseYear === 0;
 		addForm.hidden = false;
-		titleInput.focus();
+		statusSelect.focus();
 	}
 
 	function renderResult(item: NewWatchlistItem): HTMLLIElement {
@@ -178,21 +183,13 @@ export function mountSearchForm(
 		event.preventDefault();
 		if (!selected) return;
 
-		// Les attributs HTML (required, min, max, step) bloquent déjà les valeurs
-		// invalides : cet événement n'est déclenché que si le formulaire est valide.
+		// Les attributs HTML (min, max, step) bloquent déjà les valeurs invalides :
+		// cet événement n'est déclenché que si le formulaire est valide.
 		const data = new FormData(addForm);
-		const title = String(data.get("title") ?? "").trim();
-		if (!title) {
-			status.textContent = "Le titre est obligatoire.";
-			titleInput.focus();
-			return;
-		}
 
 		store.addItem({
-			// type, cover et genres viennent de l'API, le reste du formulaire
+			// type, titre, année, image et genres viennent de l'API, le reste du formulaire
 			...selected,
-			title,
-			releaseYear: Number(data.get("releaseYear")) || 0,
 			status: parseStatus(data.get("status")),
 			rating: Number(data.get("rating")),
 			// Une case cochée vaut "on" dans FormData, une case décochée est absente
@@ -200,7 +197,7 @@ export function mountSearchForm(
 			notes: String(data.get("notes") ?? "").trim(),
 		});
 
-		status.textContent = `« ${title} » a été ajouté à ta liste.`;
+		status.textContent = `« ${selected.title} » a été ajouté à ta liste.`;
 		closeAddForm();
 		onAdded?.();
 	});

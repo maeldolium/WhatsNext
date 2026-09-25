@@ -72,8 +72,15 @@ function parseStatus(value: FormDataEntryValue | null): WatchlistStatus {
 	return STATUSES.find((status) => status === value) ?? "planned";
 }
 
+export interface SearchFormController {
+	/** Vide la recherche et ferme le mini-formulaire (ex. à chaque ouverture de la modale) */
+	reset(): void;
+	/** Ouvre directement le mini-formulaire pour un item déjà connu (ex. une recommandation) */
+	prefill(item: NewWatchlistItem): void;
+}
+
 /**
- * Affiche dans `container` un formulaire de recherche (films TMDB ou jeux RAWG),
+ * Affiche dans `container` un formulaire de recherche (films et séries TMDB, jeux RAWG),
  * la liste des résultats, et un mini-formulaire pour compléter l'item avant
  * de l'ajouter au store. `onAdded` est appelé après chaque ajout réussi
  * (par exemple pour fermer la modale).
@@ -82,7 +89,7 @@ export function mountSearchForm(
 	container: Element,
 	store: WatchlistStore,
 	onAdded?: () => void,
-): void {
+): SearchFormController {
 	container.innerHTML = TEMPLATE;
 
 	const searchForm = getElement(".search-form", HTMLFormElement, container);
@@ -203,4 +210,21 @@ export function mountSearchForm(
 	});
 
 	getElement(".add-cancel", HTMLButtonElement, addForm).addEventListener("click", closeAddForm);
+
+	function reset(): void {
+		// Une recherche encore en cours ne doit pas réafficher ses résultats après le reset
+		lastSearchId++;
+		searchForm.reset();
+		results.replaceChildren();
+		status.textContent = "";
+		closeAddForm();
+	}
+
+	return {
+		reset,
+		prefill(item) {
+			reset();
+			openAddForm(item);
+		},
+	};
 }

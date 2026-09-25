@@ -20,7 +20,13 @@
         <nav class="nav">
           <ul class="nav__list">
             <li class="nav__item">
-              <button class="nav__button nav__button--active" type="button" data-filter="all">
+              <button class="nav__button nav__button--active" type="button" data-page="discover">
+                <svg class="nav__icon"><use href="/sprite.svg#icon-discover"></use></svg>
+                <span class="nav__label">Découvrir</span>
+              </button>
+            </li>
+            <li class="nav__item">
+              <button class="nav__button" type="button" data-filter="all">
                 <svg class="nav__icon"><use href="/sprite.svg#icon-collection"></use></svg>
                 <span class="nav__label">Ma collection</span>
                 <span class="nav__count"></span>
@@ -82,7 +88,7 @@
       <main class="app__main">
         <header class="page-header">
           <div class="page-header__text">
-            <h1 class="page-header__title">Ma collection</h1>
+            <h1 class="page-header__title">Découvrir</h1>
             <p class="page-header__subtitle"></p>
           </div>
           <button class="page-header__add" type="button">
@@ -91,7 +97,11 @@
           </button>
         </header>
 
-        <section class="toolbar">
+        <!-- Page d'accueil : recommandations, remplie par components/discover.ts -->
+        <section class="discover"></section>
+
+        <!-- Page collection : masquée au chargement, affichée par ui/pages.ts -->
+        <section class="toolbar" hidden>
           <div class="toolbar__row">
             <div class="toolbar__search">
               <svg class="toolbar__search-icon"><use href="/sprite.svg#icon-search"></use></svg>
@@ -123,9 +133,9 @@
           </div>
         </section>
 
-        <hr class="app__separator" />
+        <hr class="app__separator" hidden />
 
-        <section class="watchlist">
+        <section class="watchlist" hidden>
           <ul class="watchlist__list"></ul>
           <p class="watchlist__message watchlist__message--empty" hidden>Ta collection est vide. Ajoute ton premier film, ta première série ou ton premier jeu !</p>
           <p class="watchlist__message watchlist__message--no-result" hidden>Aucun élément ne correspond à ta recherche.</p>

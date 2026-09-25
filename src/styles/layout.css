@@ -116,6 +116,12 @@ svg {
 	gap: 1rem;
 }
 
+/* Le display: flex ci-dessus l'emporte sur l'attribut hidden (utilisé par pages.ts) :
+   cette règle, plus précise, le rétablit */
+.toolbar[hidden] {
+	display: none;
+}
+
 .toolbar__row {
 	display: flex;
 	gap: 1rem;

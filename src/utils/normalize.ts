@@ -25,7 +25,7 @@ const TMDB_GENRES: Record<number, string> = {
 	10402: "Musique",
 	9648: "Mystère",
 	10749: "Romance",
-	878: "Science-Fiction",
+	878: "Science-fiction",
 	10770: "Téléfilm",
 	53: "Thriller",
 	10752: "Guerre",
@@ -58,11 +58,6 @@ const RAWG_GENRES: Record<string, string> = {
 	educational: "Éducatif",
 };
 
-// Image affichée quand l'API n'en fournit pas, même format que les mocks
-function placeholderCover(title: string): string {
-	return `https://placehold.co/300x450?text=${encodeURIComponent(title)}`;
-}
-
 // Extrait l'année d'une date "YYYY-MM-DD". Renvoie 0 si la date est vide ou absente.
 function yearFromDate(date: string | null): number {
 	const year = Number.parseInt(date?.slice(0, 4) ?? "", 10);
@@ -73,9 +68,8 @@ export function normalizeTmdbMovie(raw: TmdbMovieRaw): NewWatchlistItem {
 	return {
 		type: "movie",
 		title: raw.title,
-		cover: raw.poster_path
-			? `${TMDB_IMAGE_BASE_URL}${raw.poster_path}`
-			: placeholderCover(raw.title),
+		// Pas d'image : chaîne vide, la carte affiche alors son propre placeholder (card.ts)
+		cover: raw.poster_path ? `${TMDB_IMAGE_BASE_URL}${raw.poster_path}` : "",
 		releaseYear: yearFromDate(raw.release_date),
 		// Les IDs inconnus de la table sont ignorés
 		genres: raw.genre_ids.map((id) => TMDB_GENRES[id]).filter((name) => name !== undefined),
@@ -87,7 +81,7 @@ export function normalizeRawgGame(raw: RawgGameRaw): NewWatchlistItem {
 		type: "game",
 		title: raw.name,
 		// RAWG renvoie déjà une URL complète
-		cover: raw.background_image ?? placeholderCover(raw.name),
+		cover: raw.background_image ?? "",
 		releaseYear: yearFromDate(raw.released),
 		// Genre absent de la table : on garde le nom anglais plutôt que de le perdre
 		genres: raw.genres.map((genre) => RAWG_GENRES[genre.slug] ?? genre.name),

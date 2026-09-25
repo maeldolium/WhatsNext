@@ -1,5 +1,6 @@
 import type { WatchlistItem } from "../types/watchlist.ts";
 import { createElement, createIcon, getElement } from "../utils/dom.ts";
+import { canHaveOpinion } from "../utils/status.ts";
 import { STATUS_LABELS, TYPE_ICONS, TYPE_LABELS } from "./labels.ts";
 
 const MAX_RATING = 5;
@@ -80,6 +81,11 @@ export function updateCard(card: HTMLElement, item: WatchlistItem): void {
 		card.classList.toggle(`card--${status.replaceAll("_", "-")}`, item.status === status);
 	}
 	card.classList.toggle("card--favorite", item.favorite);
+
+	// Pas de note ni de favori sur un titre « À découvrir » (même règle que le store)
+	const opinionAllowed = canHaveOpinion(item.status);
+	getElement(".card__favorite", HTMLButtonElement, card).hidden = !opinionAllowed;
+	getElement(".card__rating", HTMLDivElement, card).hidden = !opinionAllowed;
 
 	// On ne touche à src que si l'URL a changé, sinon l'image serait rechargée
 	const cover = getElement(".card__cover", HTMLImageElement, card);

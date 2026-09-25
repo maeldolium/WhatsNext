@@ -5,6 +5,7 @@ import type { WatchlistItemType, WatchlistStatus } from "../types/watchlist.ts";
 import { STATUS_LABELS, TYPE_LABELS } from "../ui/labels.ts";
 import { createElement, getElement } from "../utils/dom.ts";
 import { normalizeRawgGame, normalizeTmdbMovie, normalizeTmdbTvShow } from "../utils/normalize.ts";
+import { canHaveOpinion } from "../utils/status.ts";
 
 // Longueur minimale de la recherche, pour éviter des requêtes trop vagues
 const MIN_QUERY_LENGTH = 2;
@@ -120,12 +121,12 @@ export function mountSearchForm(
 	// dernier : on l'ignore pour ne pas écraser les bons résultats.
 	let lastSearchId = 0;
 
-	// Pas de note ni de favori pour un titre « À découvrir » : on ne peut pas encore
-	// avoir d'avis dessus. Un fieldset désactivé (disabled) n'est ni validé par le
+	// Pas de note ni de favori pour un titre « À découvrir » (règle de utils/status.ts,
+	// appliquée aussi par le store et les cartes). Un fieldset désactivé (disabled) n'est ni validé par le
 	// navigateur ni envoyé dans FormData : une note saisie avant de repasser sur
 	// « À découvrir » n'est donc jamais enregistrée.
 	function updateOpinion(): void {
-		const canGiveOpinion = statusSelect.value !== "planned";
+		const canGiveOpinion = canHaveOpinion(parseStatus(statusSelect.value));
 		opinion.hidden = !canGiveOpinion;
 		opinion.disabled = !canGiveOpinion;
 	}

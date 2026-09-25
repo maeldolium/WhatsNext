@@ -5,6 +5,7 @@ import type {
 	WatchlistStore,
 } from "../types/store.ts";
 import type { WatchlistItem } from "../types/watchlist.ts";
+import { canHaveOpinion } from "../utils/status.ts";
 
 export interface StoreOptions {
 	// Nom de la case dans localStorage
@@ -69,6 +70,20 @@ function assertValidRating(rating: number): void {
 	}
 }
 
+// Un titre « À découvrir » n'a pas d'avis (voir utils/status.ts) :
+// - une note ou un favori demandés explicitement sur un tel titre sont refusés ;
+// - un titre qui repasse « À découvrir » perd sa note et son favori.
+// `requested` contient les champs demandés par l'appelant, `item` le résultat final.
+function applyOpinionRule(item: WatchlistItem, requested: WatchlistItemChanges): WatchlistItem {
+	if (canHaveOpinion(item.status)) return item;
+	if ((requested.rating ?? 0) > 0 || requested.favorite === true) {
+		throw new Error(
+			`« ${item.title} » est à découvrir : impossible de le noter ou de le mettre en favori.`,
+		);
+	}
+	return { ...item, rating: 0, favorite: false };
+}
+
 // Les variables déclarées dans cette fonction sont privées :
 // seules les méthodes retournées y ont accès.
 export function createWatchlistStore(options: StoreOptions = {}): WatchlistStore {
@@ -89,11 +104,10 @@ export function createWatchlistStore(options: StoreOptions = {}): WatchlistStore
 	const updateItem = (id: string, changes: WatchlistItemChanges): WatchlistItem => {
 		if (changes.rating !== undefined) assertValidRating(changes.rating);
 		const index = indexOf(id);
-		const updated: WatchlistItem = {
-			...items[index],
-			...changes,
-			dateUpdated: new Date().toISOString(),
-		};
+		const updated = applyOpinionRule(
+			{ ...items[index], ...changes, dateUpdated: new Date().toISOString() },
+			changes,
+		);
 		// On remplace l'objet entier plutôt que de modifier ses champs un par un :
 		// c'est cette affectation que le Proxy détecte pour sauvegarder.
 		items[index] = updated;
@@ -108,17 +122,20 @@ export function createWatchlistStore(options: StoreOptions = {}): WatchlistStore
 		addItem(data) {
 			if (data.rating !== undefined) assertValidRating(data.rating);
 			const now = new Date().toISOString();
-			const item: WatchlistItem = {
-				// Valeurs par défaut, écrasées par celles de data si elles sont fournies
-				status: "planned",
-				rating: 0,
-				favorite: false,
-				notes: "",
-				...data,
-				id: crypto.randomUUID(),
-				dateAdded: now,
-				dateUpdated: now,
-			};
+			const item = applyOpinionRule(
+				{
+					// Valeurs par défaut, écrasées par celles de data si elles sont fournies
+					status: "planned",
+					rating: 0,
+					favorite: false,
+					notes: "",
+					...data,
+					id: crypto.randomUUID(),
+					dateAdded: now,
+					dateUpdated: now,
+				},
+				data,
+			);
 			items.push(item);
 			notify({ type: "add", item });
 			return item;

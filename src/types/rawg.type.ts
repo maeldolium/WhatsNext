@@ -11,6 +11,8 @@ export interface RawgGameRaw {
 	released: string | null;
 	/** Note moyenne des joueurs, sur 5 (ex. 4.38) */
 	rating: number;
+	/** Note de la presse (Metacritic), sur 100. null si le jeu n'a pas été noté */
+	metacritic: number | null;
 	genres: RawgGenre[];
 }
 

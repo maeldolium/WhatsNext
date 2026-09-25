@@ -13,6 +13,10 @@ export interface TmdbMovieRaw {
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
+	/** Note moyenne des spectateurs TMDB, sur 10 */
+	vote_average: number;
+	/** Nombre de votes, utile pour écarter les notes peu fiables */
+	vote_count: number;
 }
 
 /**
@@ -31,11 +35,15 @@ export interface TmdbTvShowRaw {
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
+	/** Note moyenne des spectateurs TMDB, sur 10 */
+	vote_average: number;
+	/** Nombre de votes, utile pour écarter les notes peu fiables */
+	vote_count: number;
 }
 
 /**
- * Réponse paginée des endpoints de recherche TMDB. T est le type d'un résultat :
- * TmdbMovieRaw pour /search/movie, TmdbTvShowRaw pour /search/tv.
+ * Réponse paginée des endpoints de liste TMDB (/search, /discover). T est le type
+ * d'un résultat : TmdbMovieRaw pour les films, TmdbTvShowRaw pour les séries.
  */
 export interface TmdbSearchResponse<T> {
 	page: number;

@@ -1,6 +1,6 @@
 import type { RawgGameRaw } from "../types/rawg.type.ts";
 import type { NewWatchlistItem } from "../types/store.ts";
-import type { TmdbMovieRaw } from "../types/tmdb.type.ts";
+import type { TmdbMovieRaw, TmdbTvShowRaw } from "../types/tmdb.type.ts";
 
 // Les normaliseurs renvoient un NewWatchlistItem : id, dates, statut, note,
 // favori et notes sont remplis par store.addItem() avec ses valeurs par défaut.
@@ -30,6 +30,28 @@ const TMDB_GENRES: Record<number, string> = {
 	53: "Thriller",
 	10752: "Guerre",
 	37: "Western",
+};
+
+// Genres des séries TMDB. Certains sont combinés côté TMDB (« Action & Adventure ») :
+// on les découpe pour retrouver les mêmes noms que les films et les jeux, afin que le
+// filtre par genre regroupe tout. D'autres ne sont pas traduits par TMDB (« Kids »…).
+const TMDB_TV_GENRES: Record<number, string[]> = {
+	10759: ["Action", "Aventure"],
+	16: ["Animation"],
+	35: ["Comédie"],
+	80: ["Crime"],
+	99: ["Documentaire"],
+	18: ["Drame"],
+	10751: ["Familial"],
+	10762: ["Jeunesse"],
+	9648: ["Mystère"],
+	10763: ["Actualités"],
+	10764: ["Téléréalité"],
+	10765: ["Science-fiction", "Fantastique"],
+	10766: ["Feuilleton"],
+	10767: ["Talk-show"],
+	10768: ["Guerre", "Politique"],
+	37: ["Western"],
 };
 
 // Traduction des genres RAWG, qui ne sont disponibles qu'en anglais.
@@ -73,6 +95,18 @@ export function normalizeTmdbMovie(raw: TmdbMovieRaw): NewWatchlistItem {
 		releaseYear: yearFromDate(raw.release_date),
 		// Les IDs inconnus de la table sont ignorés
 		genres: raw.genre_ids.map((id) => TMDB_GENRES[id]).filter((name) => name !== undefined),
+	};
+}
+
+export function normalizeTmdbTvShow(raw: TmdbTvShowRaw): NewWatchlistItem {
+	// Set : évite un doublon si deux genres TMDB donnent le même nom
+	const genres = new Set(raw.genre_ids.flatMap((id) => TMDB_TV_GENRES[id] ?? []));
+	return {
+		type: "tv_show",
+		title: raw.name,
+		cover: raw.poster_path ? `${TMDB_IMAGE_BASE_URL}${raw.poster_path}` : "",
+		releaseYear: yearFromDate(raw.first_air_date),
+		genres: [...genres],
 	};
 }
 

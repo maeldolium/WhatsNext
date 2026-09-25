@@ -15,10 +15,31 @@ export interface TmdbMovieRaw {
 	popularity: number;
 }
 
-/** Réponse paginée des endpoints de recherche TMDB (ex. /search/movie) */
-export interface TmdbSearchResponse {
+/**
+ * Série telle que renvoyée par l'API TMDB (/search/tv). Mêmes champs que
+ * pour un film, sauf le titre et la date qui portent un autre nom.
+ */
+export interface TmdbTvShowRaw {
+	id: number;
+	/** Équivalent de "title" pour un film */
+	name: string;
+	/** Chemin relatif, à préfixer comme pour les films */
+	poster_path: string | null;
+	/** Date du premier épisode, format "YYYY-MM-DD", peut être une chaîne vide */
+	first_air_date: string;
+	/** IDs de genres TMDB des séries (différents en partie de ceux des films) */
+	genre_ids: number[];
+	overview: string;
+	popularity: number;
+}
+
+/**
+ * Réponse paginée des endpoints de recherche TMDB. T est le type d'un résultat :
+ * TmdbMovieRaw pour /search/movie, TmdbTvShowRaw pour /search/tv.
+ */
+export interface TmdbSearchResponse<T> {
 	page: number;
-	results: TmdbMovieRaw[];
+	results: T[];
 	total_pages: number;
 	total_results: number;
 }

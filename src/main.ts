@@ -2,6 +2,7 @@ import "./style.css";
 import "./styles/layout.css";
 
 import { mountDiscover } from "./components/discover.ts";
+import { mountEditForm } from "./components/edit-form.ts";
 import { mountSearchForm } from "./components/search-form.ts";
 // Store de démonstration (données pré-remplies). Pour passer au vrai store, remplacer par :
 // import { watchlistStore as store } from "./store/store.ts";
@@ -13,21 +14,33 @@ import { closeModal, openModal } from "./ui/modal.ts";
 import { getCurrentPage, showPage } from "./ui/pages.ts";
 import { CATEGORY_TITLES } from "./ui/view.ts";
 import { mountWatchlist } from "./ui/watchlist.ts";
-import { getElement } from "./utils/dom.ts";
+import { createElement, getElement } from "./utils/dom.ts";
 
-// Formulaire de recherche TMDB / RAWG, affiché dans la modale « Ajouter »
-const searchForm = mountSearchForm(getElement("#form-root", HTMLDivElement), store, closeModal);
+// La modale contient deux formulaires : l'ajout (recherche TMDB / RAWG) et la
+// modification d'un élément. On n'affiche que celui qui correspond au bouton cliqué.
+const addRoot = createElement("div", "modal__add");
+const editRoot = createElement("div", "modal__edit");
+getElement("#form-root", HTMLDivElement).append(addRoot, editRoot);
+
+const searchForm = mountSearchForm(addRoot, store, closeModal);
+const editForm = mountEditForm(editRoot, store, closeModal);
+
+function openAddModal(): void {
+	addRoot.hidden = false;
+	editRoot.hidden = true;
+	openModal("Ajouter à la collection");
+}
 
 mountPageHeader(() => {
 	searchForm.reset();
-	openModal("Ajouter à la collection");
+	openAddModal();
 });
 
 // Page d'accueil « Découvrir ». « Ajouter » sur une carte ouvre la modale avec le
 // mini-formulaire déjà pré-rempli : il ne reste qu'à choisir statut, note, etc.
 mountDiscover(getElement(".discover", HTMLElement), store, (item) => {
 	searchForm.prefill(item);
-	openModal("Ajouter à la collection");
+	openAddModal();
 });
 
 function showDiscover(): void {
@@ -48,9 +61,11 @@ const filters = mountFilters((view) => {
 	watchlist.setView(view);
 });
 
-// TEMPORAIRE : en attendant le formulaire de C, « Modifier » ouvre seulement la fenêtre.
 const watchlist = mountWatchlist(store, {
-	onEdit: () => {
+	onEdit: (id) => {
+		if (!editForm.open(id)) return;
+		addRoot.hidden = true;
+		editRoot.hidden = false;
 		openModal("Modifier l'élément");
 	},
 	onViewApplied: (items, visibleCount) => {

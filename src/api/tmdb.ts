@@ -7,7 +7,7 @@ const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
 /**
  * Appelle un endpoint TMDB qui renvoie une liste paginée (recherche, discover…)
- * et renvoie la liste des résultats. Ne renvoie que la première page (20 résultats max).
+ * et renvoie la liste des résultats d'une page (20 résultats max, 1re page par défaut).
  */
 async function fetchTmdbList<T>(path: string, params: Record<string, string>): Promise<T[]> {
 	// searchParams encode automatiquement les valeurs (espaces, accents, &...)
@@ -37,18 +37,20 @@ export function searchTvShows(query: string): Promise<TmdbTvShowRaw[]> {
 // sans ce seuil, des titres notés 9/10 par une poignée de personnes passent devant
 // les classiques. Il y a moins de votes sur les séries, d'où un seuil plus bas.
 
-/** Films les mieux notés par les spectateurs TMDB */
-export function getTopRatedMovies(): Promise<TmdbMovieRaw[]> {
+/** Films les mieux notés par les spectateurs TMDB (page 1 = les 20 premiers, etc.) */
+export function getTopRatedMovies(page = 1): Promise<TmdbMovieRaw[]> {
 	return fetchTmdbList<TmdbMovieRaw>("/discover/movie", {
 		sort_by: "vote_average.desc",
 		"vote_count.gte": "2000",
+		page: String(page),
 	});
 }
 
-/** Séries les mieux notées par les spectateurs TMDB */
-export function getTopRatedTvShows(): Promise<TmdbTvShowRaw[]> {
+/** Séries les mieux notées par les spectateurs TMDB (page 1 = les 20 premières, etc.) */
+export function getTopRatedTvShows(page = 1): Promise<TmdbTvShowRaw[]> {
 	return fetchTmdbList<TmdbTvShowRaw>("/discover/tv", {
 		sort_by: "vote_average.desc",
 		"vote_count.gte": "1000",
+		page: String(page),
 	});
 }

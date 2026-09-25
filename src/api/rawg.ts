@@ -7,7 +7,7 @@ const RAWG_KEY = import.meta.env.VITE_RAWG_API_KEY;
 
 /**
  * Appelle l'endpoint /games de RAWG avec les paramètres donnés et renvoie la liste
- * des jeux. Ne renvoie que la première page (20 jeux max).
+ * des jeux d'une page (20 jeux max, 1re page par défaut).
  */
 async function fetchGames(params: Record<string, string>): Promise<RawgGameRaw[]> {
 	// searchParams encode automatiquement les valeurs (espaces, accents, &...)
@@ -31,6 +31,6 @@ export function searchGames(query: string): Promise<RawgGameRaw[]> {
  * Jeux les mieux notés par la presse (Metacritic). La note des joueurs RAWG n'est
  * pas utilisée : elle fait remonter des jeux notés par seulement 5 ou 6 personnes.
  */
-export function getTopRatedGames(): Promise<RawgGameRaw[]> {
-	return fetchGames({ ordering: "-metacritic" });
+export function getTopRatedGames(page = 1): Promise<RawgGameRaw[]> {
+	return fetchGames({ ordering: "-metacritic", page: String(page) });
 }

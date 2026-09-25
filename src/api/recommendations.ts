@@ -12,22 +12,28 @@ export interface Recommendation {
 	score: number;
 }
 
-/** Titres les mieux notés d'un type donné, dans l'ordre du classement de l'API */
-export async function getRecommendations(type: WatchlistItemType): Promise<Recommendation[]> {
+/**
+ * Titres les mieux notés d'un type donné, dans l'ordre du classement de l'API.
+ * `page` permet d'aller chercher la suite du classement (page 2 = titres 21 à 40…).
+ */
+export async function getRecommendations(
+	type: WatchlistItemType,
+	page = 1,
+): Promise<Recommendation[]> {
 	switch (type) {
 		case "movie":
-			return (await getTopRatedMovies()).map((raw) => ({
+			return (await getTopRatedMovies(page)).map((raw) => ({
 				item: normalizeTmdbMovie(raw),
 				score: raw.vote_average,
 			}));
 		case "tv_show":
-			return (await getTopRatedTvShows()).map((raw) => ({
+			return (await getTopRatedTvShows(page)).map((raw) => ({
 				item: normalizeTmdbTvShow(raw),
 				score: raw.vote_average,
 			}));
 		case "game":
 			return (
-				(await getTopRatedGames())
+				(await getTopRatedGames(page))
 					// Le classement RAWG contient quelques doublons incomplets (sans image ni note) :
 					// on les écarte pour ne garder que des fiches exploitables
 					.filter((raw) => raw.background_image !== null && raw.metacritic !== null)

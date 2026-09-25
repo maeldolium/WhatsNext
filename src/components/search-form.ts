@@ -23,15 +23,17 @@ const STATUS_OPTIONS = STATUSES.map(
 // Structure statique du composant. Aucune donnée venant des API n'est insérée ici,
 // donc innerHTML est sans risque. Les résultats, eux, sont créés avec createElement.
 const TEMPLATE = `
-	<form class="search-form">
-		<select name="type" aria-label="Type de recherche">
-			${TYPE_OPTIONS}
-		</select>
-		<input name="query" type="search" placeholder="Rechercher un titre…" required minlength="${MIN_QUERY_LENGTH}" aria-label="Titre" />
-		<button type="submit">Rechercher</button>
-	</form>
-	<p class="search-status" role="status"></p>
-	<ul class="search-results"></ul>
+	<div class="search-panel">
+		<form class="search-form">
+			<select name="type" aria-label="Type de recherche">
+				${TYPE_OPTIONS}
+			</select>
+			<input name="query" type="search" placeholder="Rechercher un titre…" required minlength="${MIN_QUERY_LENGTH}" aria-label="Titre" />
+			<button type="submit">Rechercher</button>
+		</form>
+		<p class="search-status" role="status"></p>
+		<ul class="search-results"></ul>
+	</div>
 	<form class="add-form" hidden>
 		<img class="add-cover" alt="" width="100" />
 		<!-- Titre et année viennent de l'API : affichés en texte, pas modifiables -->
@@ -42,8 +44,12 @@ const TEMPLATE = `
 				${STATUS_OPTIONS}
 			</select>
 		</label>
-		<label>Note <input name="rating" type="number" min="0" max="5" step="1" value="0" /></label>
-		<label><input name="favorite" type="checkbox" /> Favori</label>
+		<!-- Avis : seulement pour un titre commencé (en cours ou terminé), voir updateOpinion() -->
+		<fieldset class="add-opinion">
+			<legend>Ton avis</legend>
+			<label>Note <input name="rating" type="number" min="0" max="5" step="1" value="0" /></label>
+			<label><input name="favorite" type="checkbox" /> Favori</label>
+		</fieldset>
 		<label>Notes <textarea name="notes"></textarea></label>
 		<button type="submit">Ajouter à ma liste</button>
 		<button type="button" class="add-cancel">Annuler</button>
@@ -73,25 +79,30 @@ function parseStatus(value: FormDataEntryValue | null): WatchlistStatus {
 }
 
 export interface SearchFormController {
-	/** Vide la recherche et ferme le mini-formulaire (ex. à chaque ouverture de la modale) */
+	/** Affiche la recherche vide, sans mini-formulaire (bouton « Ajouter » du header) */
 	reset(): void;
-	/** Ouvre directement le mini-formulaire pour un item déjà connu (ex. une recommandation) */
+	/**
+	 * Affiche uniquement le mini-formulaire pour un item déjà connu, sans la recherche
+	 * (bouton « Ajouter » d'une recommandation)
+	 */
 	prefill(item: NewWatchlistItem): void;
 }
 
 /**
  * Affiche dans `container` un formulaire de recherche (films et séries TMDB, jeux RAWG),
  * la liste des résultats, et un mini-formulaire pour compléter l'item avant
- * de l'ajouter au store. `onAdded` est appelé après chaque ajout réussi
- * (par exemple pour fermer la modale).
+ * de l'ajouter au store. `onDone` est appelé quand il n'y a plus rien à faire dans
+ * le formulaire (par exemple pour fermer la modale) : après un ajout, ou après
+ * « Annuler » sur un item ouvert avec prefill().
  */
 export function mountSearchForm(
 	container: Element,
 	store: WatchlistStore,
-	onAdded?: () => void,
+	onDone?: () => void,
 ): SearchFormController {
 	container.innerHTML = TEMPLATE;
 
+	const searchPanel = getElement(".search-panel", HTMLDivElement, container);
 	const searchForm = getElement(".search-form", HTMLFormElement, container);
 	const status = getElement(".search-status", HTMLParagraphElement, container);
 	const results = getElement(".search-results", HTMLUListElement, container);
@@ -100,6 +111,7 @@ export function mountSearchForm(
 	const addTitle = getElement(".add-title", HTMLHeadingElement, addForm);
 	const addYear = getElement(".add-year", HTMLParagraphElement, addForm);
 	const statusSelect = getElement('[name="status"]', HTMLSelectElement, addForm);
+	const opinion = getElement(".add-opinion", HTMLFieldSetElement, addForm);
 
 	// Résultat choisi par l'utilisateur, en attente de validation du mini-formulaire
 	let selected: NewWatchlistItem | null = null;
@@ -107,6 +119,18 @@ export function mountSearchForm(
 	// avant la fin de la précédente, la réponse la plus ancienne peut arriver en
 	// dernier : on l'ignore pour ne pas écraser les bons résultats.
 	let lastSearchId = 0;
+
+	// Pas de note ni de favori pour un titre « À découvrir » : on ne peut pas encore
+	// avoir d'avis dessus. Un fieldset désactivé (disabled) n'est ni validé par le
+	// navigateur ni envoyé dans FormData : une note saisie avant de repasser sur
+	// « À découvrir » n'est donc jamais enregistrée.
+	function updateOpinion(): void {
+		const canGiveOpinion = statusSelect.value !== "planned";
+		opinion.hidden = !canGiveOpinion;
+		opinion.disabled = !canGiveOpinion;
+	}
+
+	statusSelect.addEventListener("change", updateOpinion);
 
 	function closeAddForm(): void {
 		selected = null;
@@ -124,6 +148,8 @@ export function mountSearchForm(
 		// Année inconnue (0) : on masque la ligne plutôt qu'afficher « 0 »
 		addYear.textContent = String(item.releaseYear);
 		addYear.hidden = item.releaseYear === 0;
+		// reset() a remis le statut sur « À découvrir » : on masque l'avis en conséquence
+		updateOpinion();
 		addForm.hidden = false;
 		statusSelect.focus();
 	}
@@ -198,7 +224,8 @@ export function mountSearchForm(
 			// type, titre, année, image et genres viennent de l'API, le reste du formulaire
 			...selected,
 			status: parseStatus(data.get("status")),
-			rating: Number(data.get("rating")),
+			// Champs absents de FormData quand l'avis est désactivé : note 0, pas favori
+			rating: Number(data.get("rating") ?? 0),
 			// Une case cochée vaut "on" dans FormData, une case décochée est absente
 			favorite: data.get("favorite") === "on",
 			notes: String(data.get("notes") ?? "").trim(),
@@ -206,10 +233,14 @@ export function mountSearchForm(
 
 		status.textContent = `« ${selected.title} » a été ajouté à ta liste.`;
 		closeAddForm();
-		onAdded?.();
+		onDone?.();
 	});
 
-	getElement(".add-cancel", HTMLButtonElement, addForm).addEventListener("click", closeAddForm);
+	getElement(".add-cancel", HTMLButtonElement, addForm).addEventListener("click", () => {
+		closeAddForm();
+		// Ouvert depuis une recommandation : il n'y a pas de recherche derrière à laquelle revenir
+		if (searchPanel.hidden) onDone?.();
+	});
 
 	function reset(): void {
 		// Une recherche encore en cours ne doit pas réafficher ses résultats après le reset
@@ -217,6 +248,7 @@ export function mountSearchForm(
 		searchForm.reset();
 		results.replaceChildren();
 		status.textContent = "";
+		searchPanel.hidden = false;
 		closeAddForm();
 	}
 
@@ -224,6 +256,7 @@ export function mountSearchForm(
 		reset,
 		prefill(item) {
 			reset();
+			searchPanel.hidden = true;
 			openAddForm(item);
 		},
 	};

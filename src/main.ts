@@ -1,17 +1,21 @@
 import "./style.css";
 import "./styles/layout.css";
 
+import { mountSearchForm } from "./components/search-form.ts";
 // Store de démonstration (données pré-remplies). Pour passer au vrai store, remplacer par :
 // import { watchlistStore as store } from "./store/store.ts";
 // (à faire quand le formulaire de C permettra d'ajouter des éléments : le vrai store démarre vide)
 import { mockWatchlistStore as store } from "./store/store.mock.ts";
 import { mountFilters } from "./ui/filters.ts";
 import { mountPageHeader, setPageSummary, setPageTitle } from "./ui/header.ts";
-import { openModal } from "./ui/modal.ts";
+import { closeModal, openModal } from "./ui/modal.ts";
 import { CATEGORY_TITLES } from "./ui/view.ts";
 import { mountWatchlist } from "./ui/watchlist.ts";
+import { getElement } from "./utils/dom.ts";
 
 mountPageHeader(() => openModal("Ajouter à la collection"));
+// Formulaire de recherche TMDB / RAWG, affiché dans la modale « Ajouter »
+mountSearchForm(getElement("#form-root", HTMLDivElement), store, closeModal);
 
 const filters = mountFilters((view) => {
 	setPageTitle(CATEGORY_TITLES[view.category]);

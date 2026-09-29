@@ -6,7 +6,7 @@ const TIMEOUT_MS = 10_000;
  * Une page d'une liste paginée. `hasMore` vient de l'API elle-même (et non du
  * nombre de résultats) : une page peut être vide après filtrage alors qu'il en reste.
  */
-export interface Page<T> {
+export interface ApiPage<T> {
 	results: T[];
 	hasMore: boolean;
 }
@@ -39,7 +39,6 @@ export class ApiError extends Error {
 }
 
 // Une erreur qui n'est pas une ApiError (bug dans notre code) reçoit le message générique
-
 export function getErrorMessage(error: unknown): string {
 	return ERROR_MESSAGES[error instanceof ApiError ? error.kind : "server"];
 }
@@ -61,7 +60,6 @@ function kindFromStatus(status: number): ApiErrorKind {
 }
 
 // Toute erreur (réseau, délai, statut HTTP, JSON invalide) est transformée en ApiError
-
 export async function fetchJson<T>(url: string): Promise<T> {
 	let response: Response;
 	try {

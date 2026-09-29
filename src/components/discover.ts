@@ -18,6 +18,7 @@ const MAX_PAGES = 10;
 
 interface Section {
 	type: WatchlistItemType;
+	title: string;
 	status: HTMLElement;
 	list: HTMLElement;
 	/** Classement chargé jusqu'ici, dans l'ordre, y compris les titres déjà dans la collection */
@@ -90,13 +91,11 @@ export function mountDiscover(
 	function render(section: Section): void {
 		const visible = visibleRecommendations(section);
 		section.list.replaceChildren(...visible.map(createRecommendationCard));
-		if (visible.length > 0) {
-			section.status.hidden = true;
-		} else if (section.exhausted) {
-			section.status.hidden = false;
-			section.status.textContent =
-				"Tu as déjà tous les titres de ce classement dans ta collection !";
-		}
+		// Rangée vide : soit la suite est en cours de chargement, soit tout est déjà dans la collection
+		section.status.hidden = visible.length > 0;
+		section.status.textContent = section.exhausted
+			? "Tu as déjà tous les titres de ce classement dans ta collection !"
+			: "Chargement…";
 	}
 
 	// Charge les pages suivantes du classement tant qu'il manque des titres à afficher.
@@ -134,9 +133,10 @@ export function mountDiscover(
 		}
 	}
 
-	const sections: Section[] = SECTIONS.map(({ type }) => ({
+	const sections: Section[] = SECTIONS.map(({ type, title }) => ({
 		type,
-		status: createElement("p", "discover__status", "Chargement…"),
+		title,
+		status: createElement("p", "discover__status"),
 		list: createElement("ul", "discover__list"),
 		ranking: [],
 		nextPage: 1,
@@ -145,11 +145,11 @@ export function mountDiscover(
 	}));
 
 	container.replaceChildren(
-		...sections.map((section, index) => {
+		...sections.map((section) => {
 			section.status.setAttribute("role", "status");
 			const element = createElement("section", "discover__section");
 			element.append(
-				createElement("h2", "discover__title", SECTIONS[index].title),
+				createElement("h2", "discover__title", section.title),
 				section.status,
 				section.list,
 			);

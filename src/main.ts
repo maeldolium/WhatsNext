@@ -31,6 +31,12 @@ function openAddModal(): void {
 	openModal("Ajouter à la collection");
 }
 
+function openEditModal(): void {
+	addRoot.hidden = true;
+	editRoot.hidden = false;
+	openModal("Modifier l'élément");
+}
+
 mountPageHeader(() => {
 	searchForm.reset();
 	openAddModal();
@@ -63,10 +69,7 @@ const filters = mountFilters((view) => {
 
 const watchlist = mountWatchlist(store, {
 	onEdit: (id) => {
-		if (!editForm.open(id)) return;
-		addRoot.hidden = true;
-		editRoot.hidden = false;
-		openModal("Modifier l'élément");
+		if (editForm.open(id)) openEditModal();
 	},
 	onViewApplied: (items, visibleCount) => {
 		filters.update(items);

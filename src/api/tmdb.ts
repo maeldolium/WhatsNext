@@ -1,11 +1,11 @@
 import type { TmdbListResponse, TmdbMovieRaw, TmdbTvShowRaw } from "../types/tmdb.type";
-import { fetchJson, type Page, requireApiKey } from "./http";
+import { type ApiPage, fetchJson, requireApiKey } from "./http";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 // Seules les variables préfixées VITE_ du .env sont accessibles dans le code du navigateur
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 
-async function fetchTmdbPage<T>(path: string, params: Record<string, string>): Promise<Page<T>> {
+async function fetchTmdbPage<T>(path: string, params: Record<string, string>): Promise<ApiPage<T>> {
 	// searchParams encode automatiquement les valeurs (espaces, accents, &...)
 	const url = new URL(`${TMDB_BASE_URL}${path}`);
 	url.searchParams.set("api_key", requireApiKey(TMDB_KEY, "VITE_TMDB_API_KEY"));
@@ -32,7 +32,7 @@ export async function searchTvShows(query: string): Promise<TmdbTvShowRaw[]> {
 // sans ce seuil, des titres notés 9/10 par une poignée de personnes passent devant
 // les classiques. Il y a moins de votes sur les séries, d'où un seuil plus bas.
 
-export function getTopRatedMovies(page = 1): Promise<Page<TmdbMovieRaw>> {
+export function getTopRatedMovies(page = 1): Promise<ApiPage<TmdbMovieRaw>> {
 	return fetchTmdbPage<TmdbMovieRaw>("/discover/movie", {
 		sort_by: "vote_average.desc",
 		"vote_count.gte": "2000",
@@ -40,7 +40,7 @@ export function getTopRatedMovies(page = 1): Promise<Page<TmdbMovieRaw>> {
 	});
 }
 
-export function getTopRatedTvShows(page = 1): Promise<Page<TmdbTvShowRaw>> {
+export function getTopRatedTvShows(page = 1): Promise<ApiPage<TmdbTvShowRaw>> {
 	return fetchTmdbPage<TmdbTvShowRaw>("/discover/tv", {
 		sort_by: "vote_average.desc",
 		"vote_count.gte": "1000",

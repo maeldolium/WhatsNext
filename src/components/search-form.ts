@@ -76,7 +76,7 @@ export interface SearchFormController {
 export function mountSearchForm(
 	container: Element,
 	store: WatchlistStore,
-	onDone?: () => void,
+	onDone: () => void,
 ): SearchFormController {
 	container.innerHTML = TEMPLATE;
 
@@ -87,6 +87,9 @@ export function mountSearchForm(
 
 	// Résultat choisi par l'utilisateur, en attente de validation du mini-formulaire
 	let selected: NewWatchlistItem | null = null;
+	// true si le mini-formulaire a été ouvert depuis une recommandation (prefill) :
+	// il n'y a alors pas de recherche derrière à laquelle revenir
+	let fromRecommendation = false;
 	// Numéro de la dernière recherche lancée. Si l'utilisateur relance une recherche
 	// avant la fin de la précédente, la réponse la plus ancienne peut arriver en
 	// dernier : on l'ignore pour ne pas écraser les bons résultats.
@@ -101,12 +104,11 @@ export function mountSearchForm(
 			// Notification séparée : la modale se ferme juste après, un message dedans ne serait pas vu
 			showToast(`« ${selected.title} » a été ajouté à ta collection.`);
 			closeAddForm();
-			onDone?.();
+			onDone();
 		},
 		onCancel() {
 			closeAddForm();
-			// Ouvert depuis une recommandation : il n'y a pas de recherche derrière à laquelle revenir
-			if (searchPanel.hidden) onDone?.();
+			if (fromRecommendation) onDone();
 		},
 	});
 
@@ -190,6 +192,7 @@ export function mountSearchForm(
 		searchForm.reset();
 		results.replaceChildren();
 		status.textContent = "";
+		fromRecommendation = false;
 		searchPanel.hidden = false;
 		closeAddForm();
 	}
@@ -198,6 +201,7 @@ export function mountSearchForm(
 		reset,
 		prefill(item) {
 			reset();
+			fromRecommendation = true;
 			searchPanel.hidden = true;
 			openAddForm(item);
 		},

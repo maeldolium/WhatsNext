@@ -1,4 +1,5 @@
 import type { WatchlistStore } from "../types/store.ts";
+import { showToast } from "../ui/toast.ts";
 import { mountItemForm } from "./item-form.ts";
 
 export interface EditFormController {
@@ -28,7 +29,8 @@ export function mountEditForm(
 			if (editedId === null) return;
 			// Le store applique aussi la règle de l'avis : repasser un titre sur
 			// « À découvrir » lui retire sa note et son favori.
-			store.updateItem(editedId, values);
+			const updated = store.updateItem(editedId, values);
+			showToast(`« ${updated.title} » a été modifié.`);
 			editedId = null;
 			onDone();
 		},

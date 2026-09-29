@@ -4,6 +4,7 @@ import { searchMovies, searchTvShows } from "../api/tmdb.ts";
 import type { NewWatchlistItem, WatchlistStore } from "../types/store.ts";
 import type { WatchlistItemType } from "../types/watchlist.ts";
 import { TYPE_LABELS } from "../ui/labels.ts";
+import { showToast } from "../ui/toast.ts";
 import { isInCollection } from "../utils/collection.ts";
 import { createElement, getElement } from "../utils/dom.ts";
 import { normalizeRawgGame, normalizeTmdbMovie, normalizeTmdbTvShow } from "../utils/normalize.ts";
@@ -97,7 +98,8 @@ export function mountSearchForm(
 			if (!selected) return;
 			// type, titre, année, image et genres viennent de l'API, le reste du formulaire
 			store.addItem({ ...selected, ...values });
-			status.textContent = `« ${selected.title} » a été ajouté à ta liste.`;
+			// Notification séparée : la modale se ferme juste après, un message dedans ne serait pas vu
+			showToast(`« ${selected.title} » a été ajouté à ta collection.`);
 			closeAddForm();
 			onDone?.();
 		},

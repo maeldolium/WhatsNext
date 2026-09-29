@@ -2,6 +2,15 @@
 // « Chargement… » affiché jusqu'à ce que le navigateur abandonne (plusieurs minutes).
 const TIMEOUT_MS = 10_000;
 
+/**
+ * Une page d'une liste paginée. `hasMore` vient de l'API elle-même (et non du
+ * nombre de résultats) : une page peut être vide après filtrage alors qu'il en reste.
+ */
+export interface Page<T> {
+	results: T[];
+	hasMore: boolean;
+}
+
 /** Les causes d'échec qu'on sait distinguer, chacune avec son message pour l'utilisateur */
 export type ApiErrorKind =
 	| "missing_key"

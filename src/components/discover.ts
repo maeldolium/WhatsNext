@@ -27,7 +27,7 @@ interface Section {
 	/** Classement chargé jusqu'ici, dans l'ordre, y compris les titres déjà dans la collection */
 	ranking: Recommendation[];
 	nextPage: number;
-	/** Plus de page à charger (fin du classement ou MAX_PAGES atteint) */
+	/** Plus de page à charger (l'API n'a plus rien, ou MAX_PAGES atteint) */
 	exhausted: boolean;
 	loading: boolean;
 }
@@ -132,16 +132,18 @@ export function mountDiscover(
 		section.loading = true;
 		try {
 			while (visibleRecommendations(section).length < VISIBLE_PER_SECTION && !section.exhausted) {
-				const page = await getRecommendations(section.type, section.nextPage);
+				const { results, hasMore } = await getRecommendations(section.type, section.nextPage);
 				section.nextPage++;
 				// Le classement peut bouger entre deux requêtes : on ignore un titre déjà reçu
 				const known = new Set(
 					section.ranking.map((recommendation) => titleKey(recommendation.item)),
 				);
 				section.ranking.push(
-					...page.filter((recommendation) => !known.has(titleKey(recommendation.item))),
+					...results.filter((recommendation) => !known.has(titleKey(recommendation.item))),
 				);
-				if (page.length === 0 || section.nextPage > MAX_PAGES) section.exhausted = true;
+				// hasMore vient de l'API : une page vide après filtrage (ex. jeux RAWG sans
+				// image) ne veut pas dire que le classement est terminé
+				if (!hasMore || section.nextPage > MAX_PAGES) section.exhausted = true;
 				render(section);
 			}
 		} catch (error) {

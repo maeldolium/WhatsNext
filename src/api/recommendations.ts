@@ -1,6 +1,7 @@
 import type { NewWatchlistItem } from "../types/store.ts";
 import type { WatchlistItemType } from "../types/watchlist.ts";
 import { normalizeRawgGame, normalizeTmdbMovie, normalizeTmdbTvShow } from "../utils/normalize.ts";
+import type { Page } from "./http.ts";
 import { getTopRatedGames } from "./rawg.ts";
 import { getTopRatedMovies, getTopRatedTvShows } from "./tmdb.ts";
 
@@ -13,34 +14,42 @@ export interface Recommendation {
 }
 
 /**
- * Titres les mieux notés d'un type donné, dans l'ordre du classement de l'API.
- * `page` permet d'aller chercher la suite du classement (page 2 = titres 21 à 40…).
+ * Une page du classement des titres les mieux notés d'un type donné, dans l'ordre
+ * de l'API. `page` permet d'aller chercher la suite (page 2 = titres 21 à 40…).
+ * `hasMore` dit s'il reste des pages, même si celle-ci est vide après filtrage.
  */
 export async function getRecommendations(
 	type: WatchlistItemType,
 	page = 1,
-): Promise<Recommendation[]> {
+): Promise<Page<Recommendation>> {
 	switch (type) {
-		case "movie":
-			return (await getTopRatedMovies(page)).map((raw) => ({
-				item: normalizeTmdbMovie(raw),
-				score: raw.vote_average,
-			}));
-		case "tv_show":
-			return (await getTopRatedTvShows(page)).map((raw) => ({
-				item: normalizeTmdbTvShow(raw),
-				score: raw.vote_average,
-			}));
-		case "game":
-			return (
-				(await getTopRatedGames(page))
+		case "movie": {
+			const { results, hasMore } = await getTopRatedMovies(page);
+			return {
+				results: results.map((raw) => ({ item: normalizeTmdbMovie(raw), score: raw.vote_average })),
+				hasMore,
+			};
+		}
+		case "tv_show": {
+			const { results, hasMore } = await getTopRatedTvShows(page);
+			return {
+				results: results.map((raw) => ({
+					item: normalizeTmdbTvShow(raw),
+					score: raw.vote_average,
+				})),
+				hasMore,
+			};
+		}
+		case "game": {
+			const { results, hasMore } = await getTopRatedGames(page);
+			return {
+				results: results
 					// Le classement RAWG contient quelques doublons incomplets (sans image ni note) :
 					// on les écarte pour ne garder que des fiches exploitables
 					.filter((raw) => raw.background_image !== null && raw.metacritic !== null)
-					.map((raw) => ({
-						item: normalizeRawgGame(raw),
-						score: (raw.metacritic ?? 0) / 10,
-					}))
-			);
+					.map((raw) => ({ item: normalizeRawgGame(raw), score: (raw.metacritic ?? 0) / 10 })),
+				hasMore,
+			};
+		}
 	}
 }

@@ -9,7 +9,7 @@ export interface TmdbMovieRaw {
 	poster_path: string | null;
 	/** Format "YYYY-MM-DD", peut être une chaîne vide si inconnue */
 	release_date: string;
-	/** IDs de genres TMDB, à résoudre via l'endpoint /genre/movie/list */
+	/** IDs de genres TMDB, traduits en noms par normalize.ts (table fixe TMDB_GENRES) */
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
@@ -31,7 +31,7 @@ export interface TmdbTvShowRaw {
 	poster_path: string | null;
 	/** Date du premier épisode, format "YYYY-MM-DD", peut être une chaîne vide */
 	first_air_date: string;
-	/** IDs de genres TMDB des séries (différents en partie de ceux des films) */
+	/** IDs de genres TMDB des séries, traduits par normalize.ts (table fixe TMDB_TV_GENRES) */
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
@@ -45,7 +45,7 @@ export interface TmdbTvShowRaw {
  * Réponse paginée des endpoints de liste TMDB (/search, /discover). T est le type
  * d'un résultat : TmdbMovieRaw pour les films, TmdbTvShowRaw pour les séries.
  */
-export interface TmdbSearchResponse<T> {
+export interface TmdbListResponse<T> {
 	page: number;
 	results: T[];
 	total_pages: number;

@@ -22,17 +22,6 @@ export interface RawgGenre {
 	slug: string;
 }
 
-/**
- * Détail d'un jeu (/games/{id}) : la description n'est disponible
- * que sur cet endpoint, pas dans les listes.
- */
-export interface RawgGameDetailRaw extends RawgGameRaw {
-	/** Description en HTML */
-	description: string;
-	/** Même description en texte brut, plus simple à afficher */
-	description_raw: string;
-}
-
 /** Réponse paginée des endpoints de liste / recherche RAWG */
 export interface RawgResponse {
 	/** Nombre total de résultats, toutes pages confondues */

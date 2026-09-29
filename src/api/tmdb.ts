@@ -1,4 +1,4 @@
-import type { TmdbMovieRaw, TmdbSearchResponse, TmdbTvShowRaw } from "../types/tmdb.type";
+import type { TmdbListResponse, TmdbMovieRaw, TmdbTvShowRaw } from "../types/tmdb.type";
 import { fetchJson, requireApiKey } from "./http";
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
@@ -18,7 +18,7 @@ async function fetchTmdbList<T>(path: string, params: Record<string, string>): P
 		url.searchParams.set(name, value);
 	}
 
-	const data = await fetchJson<TmdbSearchResponse<T>>(url.toString());
+	const data = await fetchJson<TmdbListResponse<T>>(url.toString());
 	// On ne garde que la liste, sans les infos de pagination
 	return data.results;
 }

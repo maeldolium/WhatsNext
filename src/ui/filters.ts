@@ -1,5 +1,6 @@
 import type { WatchlistItem } from "../types/watchlist.ts";
 import { getElement } from "../utils/dom.ts";
+import { setActiveNavButton } from "./pages.ts";
 import {
 	type Category,
 	DEFAULT_VIEW,
@@ -24,7 +25,8 @@ function setActiveButton(
 }
 
 export function mountFilters(onChange: (view: ViewState) => void): FiltersController {
-	const navButtons = document.querySelectorAll<HTMLButtonElement>(".nav__button");
+	// Seulement les boutons de catégorie (pour les compteurs) : « Découvrir » n'a pas de data-filter
+	const navButtons = document.querySelectorAll<HTMLButtonElement>(".nav__button[data-filter]");
 	const statusButtons = document.querySelectorAll<HTMLButtonElement>(".status-filter__button");
 	const searchInput = getElement("#search-input", HTMLInputElement);
 	const sortSelect = getElement("#sort-select", HTMLSelectElement);
@@ -41,9 +43,9 @@ export function mountFilters(onChange: (view: ViewState) => void): FiltersContro
 
 	getElement(".nav__list", HTMLUListElement).addEventListener("click", (event) => {
 		if (!(event.target instanceof Element)) return;
-		const button = event.target.closest<HTMLButtonElement>(".nav__button");
+		const button = event.target.closest<HTMLButtonElement>(".nav__button[data-filter]");
 		if (!button) return;
-		setActiveButton(navButtons, button, "nav__button--active");
+		setActiveNavButton(button);
 		change({ category: button.dataset.filter as Category });
 	});
 

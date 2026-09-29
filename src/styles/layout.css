@@ -116,6 +116,12 @@ svg {
 	gap: 1rem;
 }
 
+/* Le display: flex ci-dessus l'emporte sur l'attribut hidden (utilisé par pages.ts) :
+   cette règle, plus précise, le rétablit */
+.toolbar[hidden] {
+	display: none;
+}
+
 .toolbar__row {
 	display: flex;
 	gap: 1rem;
@@ -160,6 +166,18 @@ svg {
 	justify-content: space-between;
 	align-items: center;
 	gap: 1rem;
+}
+
+/* Notification de confirmation (ui/toast.ts) : placement uniquement, l'apparence
+   reste à définir. Le fond évite que le texte se superpose au contenu. */
+.toast {
+	position: fixed;
+	right: 1.5rem;
+	bottom: 1.5rem;
+	margin: 0;
+	padding: 0.75rem 1rem;
+	background: var(--bg);
+	border: 1px solid var(--border);
 }
 
 @media (max-width: 48rem) {

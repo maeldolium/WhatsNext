@@ -8,8 +8,11 @@ export function setPageTitle(title: string): void {
 	getElement(".page-header__title", HTMLHeadingElement).textContent = title;
 }
 
+export function setPageSubtitle(text: string): void {
+	getElement(".page-header__subtitle", HTMLParagraphElement).textContent = text;
+}
+
 export function setPageSummary(visibleCount: number, total: number): void {
 	const entries = `${visibleCount} ${visibleCount > 1 ? "entrées" : "entrée"}`;
-	getElement(".page-header__subtitle", HTMLParagraphElement).textContent =
-		`${entries} · ${total} au total`;
+	setPageSubtitle(`${entries} · ${total} au total`);
 }

@@ -1,5 +1,6 @@
 import type { WatchlistItem } from "../types/watchlist.ts";
 import { createElement, createIcon, getElement } from "../utils/dom.ts";
+import { canHaveOpinion } from "../utils/status.ts";
 import { STATUS_LABELS, TYPE_ICONS, TYPE_LABELS } from "./labels.ts";
 
 const MAX_RATING = 5;
@@ -81,6 +82,11 @@ export function updateCard(card: HTMLElement, item: WatchlistItem): void {
 	}
 	card.classList.toggle("card--favorite", item.favorite);
 
+	// Pas de note ni de favori sur un titre « À découvrir » (même règle que le store)
+	const opinionAllowed = canHaveOpinion(item.status);
+	getElement(".card__favorite", HTMLButtonElement, card).hidden = !opinionAllowed;
+	getElement(".card__rating", HTMLDivElement, card).hidden = !opinionAllowed;
+
 	// On ne touche à src que si l'URL a changé, sinon l'image serait rechargée
 	const cover = getElement(".card__cover", HTMLImageElement, card);
 	if (!item.cover) {
@@ -98,7 +104,10 @@ export function updateCard(card: HTMLElement, item: WatchlistItem): void {
 		createIcon(TYPE_ICONS[item.type], "card__type-icon"),
 		TYPE_LABELS[item.type],
 	);
-	getElement(".card__year", HTMLSpanElement, card).textContent = String(item.releaseYear);
+	// 0 = année inconnue (l'API n'en fournit pas) : on masque l'année plutôt qu'afficher « 0 »
+	const year = getElement(".card__year", HTMLSpanElement, card);
+	year.textContent = String(item.releaseYear);
+	year.hidden = item.releaseYear === 0;
 
 	const genres = getElement(".card__genres", HTMLParagraphElement, card);
 	genres.textContent = item.genres.join(" · ");

@@ -59,7 +59,7 @@ export function mountDiscover(
 		}
 		const scoreBadge = createElement("span", "discover-card__score", `★ ${formatScore(score)}`);
 
-		if (score >=7) {
+		if (score >= 7) {
 			scoreBadge.classList.add("discover-card__score--high");
 		} else if (score >= 5) {
 			scoreBadge.classList.add("discover-card__score--medium");

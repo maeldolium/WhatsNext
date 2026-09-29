@@ -13,10 +13,7 @@
 
 	--text-heading: light-dark(#192735, #f4f1eb);
 	--text: light-dark(#596674, #a6b1bc);
-	--border: light-dark(
-		rgba(25, 39, 53, 0.14),
-		rgba(166, 177, 188, 0.16)
-	);
+	--border: light-dark(rgba(25, 39, 53, 0.14), rgba(166, 177, 188, 0.16));
 }
 
 /* Plus tard, le TypeScript forcera ces valeurs
@@ -49,7 +46,6 @@ body {
 	color: var(--text);
 
 	font-family: "Manrope", system-ui, sans-serif;
-
 
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;

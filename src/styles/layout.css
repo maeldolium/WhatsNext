@@ -139,7 +139,6 @@ svg {
 	stroke-linejoin: round;
 }
 
-
 .theme-switch {
 	min-width: 0;
 	margin: 0;
@@ -164,7 +163,6 @@ svg {
 	padding: 0;
 	background: transparent;
 }
-
 
 .theme-switch__option {
 	position: relative;
@@ -194,7 +192,6 @@ svg {
 	white-space: nowrap;
 	border: 0;
 }
-
 
 .theme-switch__icon {
 	width: 1rem;
@@ -241,7 +238,6 @@ svg {
 	font-weight: 800;
 	line-height: 1.2;
 	letter-spacing: -0.03em;
-
 }
 
 .page-header__subtitle {
@@ -262,7 +258,7 @@ svg {
 	border: 0;
 	border-radius: 0.75rem;
 	background: var(--accent);
-	color:  #fff;;
+	color: #fff;
 
 	font-size: 0.875rem;
 	font-weight: 600;
@@ -273,7 +269,6 @@ svg {
 .page-header__add:hover {
 	opacity: 0.88;
 }
-
 
 .toolbar {
 	display: flex;
@@ -373,9 +368,7 @@ svg {
 	background-position:
 		1.15rem center,
 		calc(100% - 1.15rem) center;
-	background-size:
-		21px,
-		17px;
+	background-size: 21px, 17px;
 
 	transition:
 		border-color 0.2s ease,
@@ -481,11 +474,10 @@ svg {
 }
 
 .status-filter button.status-filter__button--active {
-	color:  #fff;
+	color: #fff;
 	background-color: var(--accent);
 	border-color: var(--accent);
 }
-
 
 .modal__header {
 	display: flex;

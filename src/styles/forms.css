@@ -1,30 +1,29 @@
 /* fenetre commune à tous les formulaires : ajout et modification */
 
 .modal {
-    width: min(40rem, calc(100% - 2rem));
-    max-height: calc(100svh - 2rem);
-    margin: auto;
-    padding: 1.5rem;
-    overflow-y: auto;
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    background: var(--surface);
-    color: var(--text);
-    box-shadow: var(--shadow);
+	width: min(40rem, calc(100% - 2rem));
+	max-height: calc(100svh - 2rem);
+	margin: auto;
+	padding: 1.5rem;
+	overflow-y: auto;
+	border: 1px solid var(--border);
+	border-radius: 1rem;
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: var(--shadow);
 }
 
-
 .modal::backdrop {
-    background: rgba(0 0 0 / 65%);
-    backdrop-filter: blur(4px);
+	background: rgba(0 0 0 / 65%);
+	backdrop-filter: blur(4px);
 }
 
 .modal__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
 }
 
 .modal__title {
@@ -34,29 +33,27 @@
 	line-height: 1.3;
 }
 
-
 .modal_header form {
-    margin: 0;
-    flex-shrink: 0;
+	margin: 0;
+	flex-shrink: 0;
 }
 
 .modal__close {
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0;
-    border: 0;
-    border-radius: 0.625rem;
-    background: transparent;
-    color: var(--text);
+	display: grid;
+	place-items: center;
+	width: 2.5rem;
+	height: 2.5rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0.625rem;
+	background: transparent;
+	color: var(--text);
 }
 
 .modal__close:hover {
-    background: var(--accent-bg);
-    color: var(--accent);
+	background: var(--accent-bg);
+	color: var(--accent);
 }
-
 
 .modal__close-icon {
 	width: 1.25rem;
@@ -97,7 +94,7 @@
 	border: 0;
 	border-radius: 0.625rem;
 	background: var(--accent);
-    color:  #fff;;
+	color: #fff;
 	font-size: 0.875rem;
 	font-weight: 600;
 }
@@ -179,7 +176,6 @@
 		flex-wrap: wrap;
 	}
 }
-
 
 /* la liste reste défilable sans pousser le formulaire trop bas */
 .search-results {

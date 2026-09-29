@@ -134,7 +134,7 @@
 .card__type-icon {
 	width: 0.875rem;
 	height: 0.875rem;
-    display: none;
+	display: none;
 }
 
 /* Les étoiles remplies correspondent à la note personnelle. */
@@ -188,12 +188,12 @@
 	line-height: 1.5;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
-    font-style: italic;
+	font-style: italic;
 }
 
 .card__notes::before,
 .card__notes::after {
-    content: '"';
+	content: '"';
 }
 
 /* Menu Modifier / Supprimer. */

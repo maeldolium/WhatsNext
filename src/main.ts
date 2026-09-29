@@ -1,10 +1,9 @@
 // import du style de l'interface
 import "./style.css";
-import "./styles/layout.css";
-import "./styles/discover.css";
 import "./styles/cards.css";
+import "./styles/discover.css";
 import "./styles/forms.css";
-
+import "./styles/layout.css";
 
 import { mountDiscover } from "./components/discover.ts";
 import { mountEditForm } from "./components/edit-form.ts";
@@ -17,12 +16,11 @@ import { mountFilters } from "./ui/filters.ts";
 import { mountPageHeader, setPageSubtitle, setPageSummary, setPageTitle } from "./ui/header.ts";
 import { closeModal, openModal } from "./ui/modal.ts";
 import { getCurrentPage, setActiveNavButton, showPage } from "./ui/pages.ts";
+// import du theme d'affichage (clair/sombre/suivre le système) : on l'initialise et on l'applique
+import { mountTheme } from "./ui/theme.ts";
 import { CATEGORY_TITLES } from "./ui/view.ts";
 import { mountWatchlist } from "./ui/watchlist.ts";
 import { createElement, getElement } from "./utils/dom.ts";
-
-// import du theme d'affichage (clair/sombre/suivre le système) : on l'initialise et on l'applique
-import { mountTheme } from "./ui/theme.ts";
 
 // La modale contient deux formulaires : l'ajout (recherche TMDB / RAWG) et la
 // modification d'un élément. On n'affiche que celui qui correspond au bouton cliqué.

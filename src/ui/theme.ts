@@ -1,9 +1,7 @@
 type Theme = "light" | "dark" | "auto";
 
 export function mountTheme(): void {
-	const inputs = document.querySelectorAll<HTMLInputElement>(
-		'.theme-switch__input[name="theme"]',
-	);
+	const inputs = document.querySelectorAll<HTMLInputElement>('.theme-switch__input[name="theme"]');
 
 	function applyTheme(theme: Theme): void {
 		// En auto, on laisse le CSS suivre le thème du système.
@@ -20,8 +18,7 @@ export function mountTheme(): void {
 
 	// On récupère le dernier choix, sinon on reste en auto.
 	const saved = localStorage.getItem("watchlist-theme");
-	const initial: Theme =
-		saved === "light" || saved === "dark" ? saved : "auto";
+	const initial: Theme = saved === "light" || saved === "dark" ? saved : "auto";
 
 	applyTheme(initial);
 

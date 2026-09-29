@@ -31,13 +31,17 @@ const TEMPLATE = `
 				<span>Note</span>
 				<input name="rating" type="hidden" value="0" />
 				<div class="item-form__stars" role="group" aria-label="Note sur 5">
-					${[1, 2, 3, 4, 5].map((note) => `
+					${[1, 2, 3, 4, 5]
+						.map(
+							(note) => `
 						<button type="button" class="card__star" data-note="${note}" aria-label="${note} sur 5" aria-pressed="false">
 							<svg class="card__star-icon" aria-hidden="true">
 								<use href="/sprite.svg#icon-star"></use>
 							</svg>
 						</button>
-					`).join("")}
+					`,
+						)
+						.join("")}
 				</div>
 			</div>
 			<label><input name="favorite" type="checkbox" /> Favori</label>
@@ -165,13 +169,9 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 				favoriteInput.checked = values.favorite;
 				notesInput.value = values.notes;
 			}
-<<<<<<< HEAD
-			// Après reset(), le statut est « À découvrir » : l'avis doit être masqué
-=======
 			// Affiche les étoiles de la note enregistrée.
 			updateStars();
 			// Affiche ou masque l'avis selon le statut (« À découvrir » par défaut après reset)
->>>>>>> e3151d5 (feat(ui): add styles)
 			updateOpinion();
 			form.hidden = false;
 			statusSelect.focus();

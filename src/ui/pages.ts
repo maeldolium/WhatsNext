@@ -19,16 +19,14 @@ export function showPage(page: Page): void {
 	for (const selector of COLLECTION_SELECTORS) {
 		getElement(selector, HTMLElement).hidden = page !== "collection";
 	}
+}
 
-	// Sur « Découvrir », aucune catégorie de la collection n'est active. Côté collection,
-	// c'est filters.ts qui active le bouton de la catégorie choisie.
-	getElement('.nav__button[data-page="discover"]', HTMLButtonElement).classList.toggle(
-		"nav__button--active",
-		page === "discover",
-	);
-	if (page === "discover") {
-		for (const button of document.querySelectorAll(".nav__button[data-filter]")) {
-			button.classList.remove("nav__button--active");
-		}
+/**
+ * Seul endroit qui gère le bouton actif de la navigation : active `active` et
+ * désactive tous les autres, « Découvrir » comme les catégories de la collection.
+ */
+export function setActiveNavButton(active: HTMLButtonElement): void {
+	for (const button of document.querySelectorAll<HTMLButtonElement>(".nav__button")) {
+		button.classList.toggle("nav__button--active", button === active);
 	}
 }

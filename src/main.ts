@@ -11,7 +11,7 @@ import { watchlistStore as store } from "./store/store.ts";
 import { mountFilters } from "./ui/filters.ts";
 import { mountPageHeader, setPageSubtitle, setPageSummary, setPageTitle } from "./ui/header.ts";
 import { closeModal, openModal } from "./ui/modal.ts";
-import { getCurrentPage, showPage } from "./ui/pages.ts";
+import { getCurrentPage, setActiveNavButton, showPage } from "./ui/pages.ts";
 import { CATEGORY_TITLES } from "./ui/view.ts";
 import { mountWatchlist } from "./ui/watchlist.ts";
 import { createElement, getElement } from "./utils/dom.ts";
@@ -43,16 +43,16 @@ mountDiscover(getElement(".discover", HTMLElement), store, (item) => {
 	openAddModal();
 });
 
+const discoverButton = getElement('.nav__button[data-page="discover"]', HTMLButtonElement);
+
 function showDiscover(): void {
+	setActiveNavButton(discoverButton);
 	showPage("discover");
 	setPageTitle("Découvrir");
 	setPageSubtitle("Les films, séries et jeux les mieux notés");
 }
 
-getElement('.nav__button[data-page="discover"]', HTMLButtonElement).addEventListener(
-	"click",
-	showDiscover,
-);
+discoverButton.addEventListener("click", showDiscover);
 
 // Un clic sur une catégorie (Ma collection, Films…) affiche la page collection
 const filters = mountFilters((view) => {

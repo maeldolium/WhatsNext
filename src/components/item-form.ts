@@ -24,7 +24,6 @@ const TEMPLATE = `
 				${STATUS_OPTIONS}
 			</select>
 		</label>
-		<!-- Avis : seulement pour un titre commencé (en cours ou terminé), voir updateOpinion() -->
 		<fieldset class="item-form__opinion">
 			<legend>Ton avis</legend>
 			<label>Note <input name="rating" type="number" min="0" max="5" step="1" value="0" /></label>
@@ -36,21 +35,20 @@ const TEMPLATE = `
 	</form>
 `;
 
-/** Ce que l'utilisateur peut choisir : le reste (titre, année, image…) vient de l'API */
+// Ce que l'utilisateur peut choisir. Le reste (titre, année, image…) vient de l'API
+// et n'est qu'affiché (ItemFormHeader).
 export type ItemFormValues = Pick<WatchlistItem, "status" | "rating" | "favorite" | "notes">;
 
-/** Ce qui est affiché en lecture seule en haut du formulaire */
 export type ItemFormHeader = Pick<WatchlistItem, "title" | "releaseYear" | "cover">;
 
 export interface ItemFormOptions {
-	/** Texte du bouton de validation (« Ajouter à ma liste », « Enregistrer »…) */
 	submitLabel: string;
 	onSubmit: (values: ItemFormValues) => void;
 	onCancel: () => void;
 }
 
 export interface ItemFormController {
-	/** Affiche le formulaire pour un titre, pré-rempli avec `values` s'il y en a (édition) */
+	/** `values` : valeurs actuelles pour pré-remplir le formulaire (édition). Absent pour un ajout. */
 	open(header: ItemFormHeader, values?: ItemFormValues): void;
 	close(): void;
 }
@@ -61,10 +59,7 @@ function parseStatus(value: FormDataEntryValue | null): WatchlistStatus {
 	return STATUSES.find((status) => status === value) ?? "planned";
 }
 
-/**
- * Mini-formulaire commun à l'ajout et à l'édition d'un titre : statut, avis (note
- * et favori) et notes personnelles. Le titre, l'année et l'image sont seulement affichés.
- */
+// Mini-formulaire commun à l'ajout (search-form.ts) et à l'édition (edit-form.ts)
 export function mountItemForm(container: Element, options: ItemFormOptions): ItemFormController {
 	container.innerHTML = TEMPLATE;
 
@@ -81,10 +76,9 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	getElement(".item-form__submit", HTMLButtonElement, form).textContent = options.submitLabel;
 	form.hidden = true;
 
-	// Pas de note ni de favori pour un titre « À découvrir » (règle de utils/status.ts,
-	// appliquée aussi par le store et les cartes). Un fieldset désactivé (disabled)
-	// n'est ni validé par le navigateur ni envoyé dans FormData : une note saisie
-	// avant de repasser sur « À découvrir » n'est donc jamais enregistrée.
+	// Pas d'avis pour un titre « À découvrir » (règle de utils/status.ts). Un fieldset
+	// désactivé (disabled) n'est ni validé par le navigateur ni envoyé dans FormData :
+	// une note saisie avant de repasser sur « À découvrir » n'est donc jamais enregistrée.
 	function updateOpinion(): void {
 		const canGiveOpinion = canHaveOpinion(parseStatus(statusSelect.value));
 		opinion.hidden = !canGiveOpinion;
@@ -133,7 +127,7 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 				favoriteInput.checked = values.favorite;
 				notesInput.value = values.notes;
 			}
-			// Affiche ou masque l'avis selon le statut (« À découvrir » par défaut après reset)
+			// Après reset(), le statut est « À découvrir » : l'avis doit être masqué
 			updateOpinion();
 			form.hidden = false;
 			statusSelect.focus();

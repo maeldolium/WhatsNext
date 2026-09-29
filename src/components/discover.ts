@@ -12,14 +12,10 @@ const SECTIONS: { type: WatchlistItemType; title: string }[] = [
 	{ type: "game", title: "Jeux les mieux notés" },
 ];
 
-// Nombre de titres affichés par rangée
 const VISIBLE_PER_SECTION = 20;
-// Nombre maximum de pages du classement chargées par rangée (20 titres par page).
-// Évite d'enchaîner les requêtes si la collection contient déjà une grande partie
-// du classement.
+// Limite les requêtes si la collection contient déjà une grande partie du classement
 const MAX_PAGES = 10;
 
-// État d'une rangée
 interface Section {
 	type: WatchlistItemType;
 	status: HTMLElement;
@@ -37,13 +33,8 @@ function formatScore(score: number): string {
 	return score.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
-/**
- * Affiche dans `container` la page « Découvrir » : une rangée par type (films,
- * séries, jeux) avec les titres les mieux notés qui ne sont pas encore dans la
- * collection. Quand un titre est ajouté, il disparaît et le suivant du classement
- * prend sa place ; s'il est retiré de la collection, il revient à sa place.
- * `onAdd` est appelé au clic sur « Ajouter » d'une carte (ex. pour ouvrir le formulaire).
- */
+// Les titres déjà dans la collection ne sont pas affichés : quand un titre est ajouté,
+// le suivant du classement prend sa place ; s'il est retiré, il revient à sa place.
 export function mountDiscover(
 	container: HTMLElement,
 	store: WatchlistStore,
@@ -89,7 +80,6 @@ export function mountDiscover(
 		return card;
 	}
 
-	/** Les titres à afficher : les premiers du classement qui ne sont pas dans la collection */
 	function visibleRecommendations(section: Section): Recommendation[] {
 		const collection = store.getAll();
 		return section.ranking

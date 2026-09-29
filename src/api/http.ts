@@ -11,7 +11,6 @@ export interface Page<T> {
 	hasMore: boolean;
 }
 
-/** Les causes d'échec qu'on sait distinguer, chacune avec son message pour l'utilisateur */
 export type ApiErrorKind =
 	| "missing_key"
 	| "invalid_key"
@@ -29,7 +28,6 @@ const ERROR_MESSAGES: Record<ApiErrorKind, string> = {
 	server: "Le service est indisponible pour le moment, réessaie plus tard.",
 };
 
-/** Erreur d'appel à une API externe, avec sa cause (`kind`) */
 export class ApiError extends Error {
 	readonly kind: ApiErrorKind;
 
@@ -40,10 +38,8 @@ export class ApiError extends Error {
 	}
 }
 
-/**
- * Message à afficher à l'utilisateur pour une erreur attrapée dans un catch.
- * Une erreur inattendue (bug dans notre code) reçoit le message générique.
- */
+// Une erreur qui n'est pas une ApiError (bug dans notre code) reçoit le message générique
+
 export function getErrorMessage(error: unknown): string {
 	return ERROR_MESSAGES[error instanceof ApiError ? error.kind : "server"];
 }
@@ -64,10 +60,8 @@ function kindFromStatus(status: number): ApiErrorKind {
 	return "server";
 }
 
-/**
- * Fait une requête GET et renvoie le corps JSON typé en T.
- * Partagée par les clients TMDB et RAWG. Toute erreur est une ApiError.
- */
+// Toute erreur (réseau, délai, statut HTTP, JSON invalide) est transformée en ApiError
+
 export async function fetchJson<T>(url: string): Promise<T> {
 	let response: Response;
 	try {

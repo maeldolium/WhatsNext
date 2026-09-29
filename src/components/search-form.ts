@@ -38,7 +38,6 @@ const TEMPLATE = `
 	<div class="search-add"></div>
 `;
 
-// Appelle la bonne API et renvoie des items déjà au format de l'app
 async function search(type: WatchlistItemType, query: string): Promise<NewWatchlistItem[]> {
 	switch (type) {
 		case "movie":
@@ -57,22 +56,14 @@ function parseType(value: FormDataEntryValue | null): WatchlistItemType {
 }
 
 export interface SearchFormController {
-	/** Affiche la recherche vide, sans mini-formulaire (bouton « Ajouter » du header) */
+	/** Recherche vide, sans mini-formulaire (bouton « Ajouter » de l'en-tête) */
 	reset(): void;
-	/**
-	 * Affiche uniquement le mini-formulaire pour un item déjà connu, sans la recherche
-	 * (bouton « Ajouter » d'une recommandation)
-	 */
+	/** Mini-formulaire seul, sans la recherche (bouton « Ajouter » d'une recommandation) */
 	prefill(item: NewWatchlistItem): void;
 }
 
-/**
- * Affiche dans `container` un formulaire de recherche (films et séries TMDB, jeux RAWG),
- * la liste des résultats, et un mini-formulaire pour compléter l'item avant
- * de l'ajouter au store. `onDone` est appelé quand il n'y a plus rien à faire dans
- * le formulaire (par exemple pour fermer la modale) : après un ajout, ou après
- * « Annuler » sur un item ouvert avec prefill().
- */
+// `onDone` est appelé quand il n'y a plus rien à faire dans le formulaire (ex. fermer
+// la modale) : après un ajout, ou après « Annuler » sur un item ouvert avec prefill().
 export function mountSearchForm(
 	container: Element,
 	store: WatchlistStore,
@@ -141,7 +132,6 @@ export function mountSearchForm(
 		const button = createElement("button", "search-results__button");
 		button.type = "button";
 		button.append(cover, label);
-		// Titre déjà dans la collection : on l'indique et on empêche de l'ajouter une 2e fois
 		if (isInCollection(item, store.getAll())) {
 			button.disabled = true;
 			button.append(createElement("span", "search-results__owned", "Dans ta collection"));

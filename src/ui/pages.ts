@@ -4,7 +4,6 @@ import { getElement } from "../utils/dom.ts";
 // (barre de filtres + liste). On affiche l'une et on masque l'autre avec l'attribut hidden.
 export type Page = "discover" | "collection";
 
-// Éléments qui n'appartiennent qu'à la page collection
 const COLLECTION_SELECTORS = [".toolbar", ".app__separator", ".watchlist"];
 
 let currentPage: Page = "discover";
@@ -21,10 +20,7 @@ export function showPage(page: Page): void {
 	}
 }
 
-/**
- * Seul endroit qui gère le bouton actif de la navigation : active `active` et
- * désactive tous les autres, « Découvrir » comme les catégories de la collection.
- */
+// Seul endroit qui gère le bouton actif de la navigation (« Découvrir » et catégories)
 export function setActiveNavButton(active: HTMLButtonElement): void {
 	for (const button of document.querySelectorAll<HTMLButtonElement>(".nav__button")) {
 		button.classList.toggle("nav__button--active", button === active);

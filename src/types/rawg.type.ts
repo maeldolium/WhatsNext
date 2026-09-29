@@ -1,17 +1,16 @@
-/**
- * Jeu tel que renvoyé par l'API RAWG dans les listes / recherches (/games),
- * avant toute transformation vers le modèle de l'app.
- */
+// Réponses brutes de RAWG, avant conversion par utils/normalize.ts.
+// Les noms des champs doivent être exactement ceux de l'API.
+
 export interface RawgGameRaw {
 	id: number;
 	name: string;
-	/** URL complète de l'image (pas de préfixe à ajouter, contrairement à TMDB) */
+	/** URL complète (pas de préfixe à ajouter, contrairement à TMDB) */
 	background_image: string | null;
-	/** Format "YYYY-MM-DD", null si la date de sortie est inconnue */
+	/** Format "YYYY-MM-DD", null si la date est inconnue */
 	released: string | null;
-	/** Note moyenne des joueurs, sur 5 (ex. 4.38) */
+	/** Note moyenne des joueurs, sur 5 */
 	rating: number;
-	/** Note de la presse (Metacritic), sur 100. null si le jeu n'a pas été noté */
+	/** Note de la presse, sur 100. null si le jeu n'a pas été noté */
 	metacritic: number | null;
 	genres: RawgGenre[];
 }
@@ -19,16 +18,14 @@ export interface RawgGameRaw {
 export interface RawgGenre {
 	id: number;
 	name: string;
+	/** Identifiant texte (ex. "role-playing-games-rpg"), utilisé pour traduire le genre */
 	slug: string;
 }
 
-/** Réponse paginée des endpoints de liste / recherche RAWG */
 export interface RawgResponse {
-	/** Nombre total de résultats, toutes pages confondues */
 	count: number;
 	/** URL de la page suivante, null sur la dernière page */
 	next: string | null;
-	/** URL de la page précédente, null sur la première page */
 	previous: string | null;
 	results: RawgGameRaw[];
 }

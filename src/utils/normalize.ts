@@ -80,7 +80,7 @@ const RAWG_GENRES: Record<string, string> = {
 	educational: "Éducatif",
 };
 
-// Extrait l'année d'une date "YYYY-MM-DD". Renvoie 0 si la date est vide ou absente.
+// 0 = année inconnue (date vide ou absente) ; l'affichage masque alors l'année
 function yearFromDate(date: string | null): number {
 	const year = Number.parseInt(date?.slice(0, 4) ?? "", 10);
 	return Number.isNaN(year) ? 0 : year;
@@ -114,7 +114,6 @@ export function normalizeRawgGame(raw: RawgGameRaw): NewWatchlistItem {
 	return {
 		type: "game",
 		title: raw.name,
-		// RAWG renvoie déjà une URL complète
 		cover: raw.background_image ?? "",
 		releaseYear: yearFromDate(raw.released),
 		// Genre absent de la table : on garde le nom anglais plutôt que de le perdre

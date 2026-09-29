@@ -5,19 +5,13 @@ import type { Page } from "./http.ts";
 import { getTopRatedGames } from "./rawg.ts";
 import { getTopRatedMovies, getTopRatedTvShows } from "./tmdb.ts";
 
-// Titre recommandé : l'item au format de l'app (prêt à être ajouté au store)
-// et sa note, qui n'est pas stockée dans la watchlist.
 export interface Recommendation {
 	item: NewWatchlistItem;
-	/** Note sur 10 : spectateurs TMDB, ou presse Metacritic (sur 100) ramenée sur 10 pour les jeux */
+	// Note sur 10 (spectateurs TMDB, ou Metacritic ramenée de 100 à 10 pour les jeux).
+	// Elle sert seulement à l'affichage : elle n'est pas enregistrée dans la watchlist.
 	score: number;
 }
 
-/**
- * Une page du classement des titres les mieux notés d'un type donné, dans l'ordre
- * de l'API. `page` permet d'aller chercher la suite (page 2 = titres 21 à 40…).
- * `hasMore` dit s'il reste des pages, même si celle-ci est vide après filtrage.
- */
 export async function getRecommendations(
 	type: WatchlistItemType,
 	page = 1,

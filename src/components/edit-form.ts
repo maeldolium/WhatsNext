@@ -3,24 +3,16 @@ import { showToast } from "../ui/toast.ts";
 import { mountItemForm } from "./item-form.ts";
 
 export interface EditFormController {
-	/**
-	 * Ouvre le formulaire pré-rempli avec les valeurs actuelles de l'élément.
-	 * Renvoie false si l'élément n'existe plus (supprimé entre-temps).
-	 */
+	/** Renvoie false si l'élément n'existe plus (supprimé entre-temps) */
 	open(id: string): boolean;
 }
 
-/**
- * Formulaire de modification d'un élément de la collection : statut, avis (note et
- * favori) et notes. Mêmes champs et mêmes règles que l'ajout (item-form.ts).
- * `onDone` est appelé après l'enregistrement ou l'annulation (ex. pour fermer la modale).
- */
+// `onDone` est appelé après l'enregistrement ou l'annulation (ex. pour fermer la modale)
 export function mountEditForm(
 	container: Element,
 	store: WatchlistStore,
 	onDone: () => void,
 ): EditFormController {
-	// Id de l'élément en cours de modification
 	let editedId: string | null = null;
 
 	const form = mountItemForm(container, {

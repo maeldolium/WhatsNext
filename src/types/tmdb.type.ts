@@ -1,50 +1,37 @@
-/**
- * Film tel que renvoyé par l'API TMDB (endpoints de recherche / listes),
- * avant toute transformation vers le modèle de l'app.
- */
+// Réponses brutes de TMDB, avant conversion par utils/normalize.ts.
+// Les noms des champs doivent être exactement ceux de l'API.
+
 export interface TmdbMovieRaw {
 	id: number;
 	title: string;
-	/** Chemin relatif (ex. "/abc.jpg") à préfixer par l'URL d'images TMDB, ex. https://image.tmdb.org/t/p/w500 */
+	/** Chemin relatif (ex. "/abc.jpg") à préfixer par l'URL des images TMDB */
 	poster_path: string | null;
-	/** Format "YYYY-MM-DD", peut être une chaîne vide si inconnue */
+	/** Format "YYYY-MM-DD", chaîne vide si la date est inconnue */
 	release_date: string;
 	/** IDs de genres TMDB, traduits en noms par normalize.ts (table fixe TMDB_GENRES) */
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
-	/** Note moyenne des spectateurs TMDB, sur 10 */
+	/** Note moyenne des spectateurs, sur 10 */
 	vote_average: number;
-	/** Nombre de votes, utile pour écarter les notes peu fiables */
 	vote_count: number;
 }
 
-/**
- * Série telle que renvoyée par l'API TMDB (/search/tv). Mêmes champs que
- * pour un film, sauf le titre et la date qui portent un autre nom.
- */
+// Mêmes champs que pour un film, mais le titre et la date n'ont pas le même nom
 export interface TmdbTvShowRaw {
 	id: number;
-	/** Équivalent de "title" pour un film */
 	name: string;
-	/** Chemin relatif, à préfixer comme pour les films */
 	poster_path: string | null;
-	/** Date du premier épisode, format "YYYY-MM-DD", peut être une chaîne vide */
+	/** Date du premier épisode, format "YYYY-MM-DD", chaîne vide si inconnue */
 	first_air_date: string;
-	/** IDs de genres TMDB des séries, traduits par normalize.ts (table fixe TMDB_TV_GENRES) */
+	/** IDs de genres des séries, en partie différents de ceux des films (table TMDB_TV_GENRES) */
 	genre_ids: number[];
 	overview: string;
 	popularity: number;
-	/** Note moyenne des spectateurs TMDB, sur 10 */
 	vote_average: number;
-	/** Nombre de votes, utile pour écarter les notes peu fiables */
 	vote_count: number;
 }
 
-/**
- * Réponse paginée des endpoints de liste TMDB (/search, /discover). T est le type
- * d'un résultat : TmdbMovieRaw pour les films, TmdbTvShowRaw pour les séries.
- */
 export interface TmdbListResponse<T> {
 	page: number;
 	results: T[];

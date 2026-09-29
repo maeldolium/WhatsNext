@@ -49,10 +49,6 @@ export function mountDiscover(
 	store: WatchlistStore,
 	onAdd: (item: NewWatchlistItem) => void,
 ): void {
-	// Cartes déjà créées, par titre : un titre qui revient (après une suppression
-	// de la collection) réutilise sa carte au lieu d'en recréer une
-	const cards = new Map<string, HTMLLIElement>();
-
 	function createRecommendationCard({ item, score }: Recommendation): HTMLLIElement {
 		const media = createElement("div", "discover-card__media");
 		// Carte sans image, ou image qui ne charge pas : on affiche le titre à la place
@@ -93,16 +89,6 @@ export function mountDiscover(
 		return card;
 	}
 
-	function getCard(recommendation: Recommendation): HTMLLIElement {
-		const key = titleKey(recommendation.item);
-		let card = cards.get(key);
-		if (!card) {
-			card = createRecommendationCard(recommendation);
-			cards.set(key, card);
-		}
-		return card;
-	}
-
 	/** Les titres à afficher : les premiers du classement qui ne sont pas dans la collection */
 	function visibleRecommendations(section: Section): Recommendation[] {
 		const collection = store.getAll();
@@ -113,7 +99,7 @@ export function mountDiscover(
 
 	function render(section: Section): void {
 		const visible = visibleRecommendations(section);
-		section.list.replaceChildren(...visible.map(getCard));
+		section.list.replaceChildren(...visible.map(createRecommendationCard));
 		if (visible.length > 0) {
 			section.status.hidden = true;
 		} else if (section.exhausted) {

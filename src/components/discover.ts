@@ -58,6 +58,15 @@ export function mountDiscover(
 			media.append(cover);
 		}
 		const scoreBadge = createElement("span", "discover-card__score", `★ ${formatScore(score)}`);
+
+		if (score >= 7) {
+			scoreBadge.classList.add("discover-card__score--high");
+		} else if (score >= 5) {
+			scoreBadge.classList.add("discover-card__score--medium");
+		} else {
+			scoreBadge.classList.add("discover-card__score--low");
+		}
+
 		scoreBadge.setAttribute("aria-label", `Note : ${formatScore(score)} sur 10`);
 		media.append(placeholder, scoreBadge);
 

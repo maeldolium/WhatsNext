@@ -24,9 +24,26 @@ const TEMPLATE = `
 				${STATUS_OPTIONS}
 			</select>
 		</label>
+		<!-- Avis : seulement pour un titre commencé (en cours ou terminé), voir updateOpinion() -->
 		<fieldset class="item-form__opinion">
 			<legend>Ton avis</legend>
-			<label>Note <input name="rating" type="number" min="0" max="5" step="1" value="0" /></label>
+			<div>
+				<span>Note</span>
+				<input name="rating" type="hidden" value="0" />
+				<div class="item-form__stars">
+					${[1, 2, 3, 4, 5]
+						.map(
+							(note) => `
+						<button type="button" class="card__star" data-note="${note}">
+							<svg class="card__star-icon">
+								<use href="/sprite.svg#icon-star"></use>
+							</svg>
+						</button>
+					`,
+						)
+						.join("")}
+				</div>
+			</div>
 			<label><input name="favorite" type="checkbox" /> Favori</label>
 		</fieldset>
 		<label>Notes <textarea name="notes" maxlength="${NOTES_MAX_LENGTH}"></textarea></label>
@@ -72,7 +89,26 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	const ratingInput = getElement('[name="rating"]', HTMLInputElement, form);
 	const favoriteInput = getElement('[name="favorite"]', HTMLInputElement, form);
 	const notesInput = getElement('[name="notes"]', HTMLTextAreaElement, form);
+	const stars = form.querySelectorAll<HTMLButtonElement>("[data-note]");
 
+	// Colore les étoiles jusqu'à la note choisie
+	function updateStars(): void {
+		const rating = Number(ratingInput.value);
+
+		stars.forEach((star) => {
+			star.classList.toggle("card__star--active", Number(star.dataset.note) <= rating);
+		});
+	}
+
+	stars.forEach((star) => {
+		star.addEventListener("click", () => {
+			const note = star.dataset.note ?? "0";
+
+			// Recliquer sur la même étoile enlève la note
+			ratingInput.value = ratingInput.value === note ? "0" : note;
+			updateStars();
+		});
+	});
 	getElement(".item-form__submit", HTMLButtonElement, form).textContent = options.submitLabel;
 	form.hidden = true;
 
@@ -91,8 +127,8 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 		// Empêche le navigateur de recharger la page à l'envoi du formulaire
 		event.preventDefault();
 
-		// Les attributs HTML (min, max, step, maxlength) bloquent déjà les valeurs
-		// invalides : cet événement n'est déclenché que si le formulaire est valide.
+		// L'attribut maxlength bloque déjà les notes trop longues : cet événement
+		// n'est déclenché que si le formulaire est valide.
 		const data = new FormData(form);
 		options.onSubmit({
 			status: parseStatus(data.get("status")),
@@ -112,6 +148,8 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	return {
 		open(header, values) {
 			form.reset();
+			// reset() ne remet pas à zéro un input hidden dont on a changé la valeur : on le fait à la main
+			ratingInput.value = "0";
 			// Pas d'image (chaîne vide) : on masque la balise plutôt qu'afficher une image cassée
 			cover.src = header.cover;
 			cover.hidden = header.cover === "";
@@ -127,7 +165,9 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 				favoriteInput.checked = values.favorite;
 				notesInput.value = values.notes;
 			}
-			// Après reset(), le statut est « À découvrir » : l'avis doit être masqué
+			// Affiche les étoiles de la note enregistrée.
+			updateStars();
+			// Affiche ou masque l'avis selon le statut (« À découvrir » par défaut après reset)
 			updateOpinion();
 			form.hidden = false;
 			statusSelect.focus();

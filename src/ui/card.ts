@@ -1,7 +1,7 @@
 import type { WatchlistItem } from "../types/watchlist.ts";
 import { createElement, createIcon, getElement } from "../utils/dom.ts";
 import { canHaveOpinion } from "../utils/status.ts";
-import { STATUS_LABELS, TYPE_ICONS, TYPE_LABELS } from "./labels.ts";
+import { STATUS_LABELS, TYPE_LABELS } from "./labels.ts";
 
 const MAX_RATING = 5;
 
@@ -100,10 +100,7 @@ export function updateCard(card: HTMLElement, item: WatchlistItem): void {
 
 	getElement(".card__status", HTMLSpanElement, card).textContent = STATUS_LABELS[item.status];
 	getElement(".card__title", HTMLHeadingElement, card).textContent = item.title;
-	getElement(".card__type", HTMLSpanElement, card).replaceChildren(
-		createIcon(TYPE_ICONS[item.type], "card__type-icon"),
-		TYPE_LABELS[item.type],
-	);
+	getElement(".card__type", HTMLSpanElement, card).textContent = TYPE_LABELS[item.type];
 	// 0 = année inconnue (l'API n'en fournit pas) : on masque l'année plutôt qu'afficher « 0 »
 	const year = getElement(".card__year", HTMLSpanElement, card);
 	year.textContent = String(item.releaseYear);

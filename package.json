@@ -1,15 +1,17 @@
 {
   "name": "whatsnext",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "check": "biome check .",
+    "build": "npm run check && tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "typescript": "~6.0.2",
-    "vite": "^8.3.0"
+    "@biomejs/biome": "2.5.13",
+    "typescript": "6.0.2",
+    "vite": "8.3.0"
   }
 }

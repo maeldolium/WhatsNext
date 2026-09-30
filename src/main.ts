@@ -1,60 +1,88 @@
-import './style.css'
-import heroImg from './assets/hero.png'
-import typescriptLogo from './assets/typescript.svg'
-import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.ts'
+// import du style de l'interface
+import "./style.css";
+import "./styles/cards.css";
+import "./styles/discover.css";
+import "./styles/forms.css";
+import "./styles/layout.css";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${typescriptLogo}" class="framework" alt="TypeScript logo"/>
-    <img src="${viteLogo}" class="vite" alt="Vite logo" />
-  </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.ts</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+import { mountDiscover } from "./components/discover.ts";
+import { mountEditForm } from "./components/edit-form.ts";
+import { mountSearchForm } from "./components/search-form.ts";
+// Vrai store : la collection démarre vide et se remplit avec les titres ajoutés depuis
+// la recherche ou « Découvrir ». Pour tester avec des données de démonstration, remplacer par :
+// import { mockWatchlistStore as store } from "./store/store.mock.ts";
+import { watchlistStore as store } from "./store/store.ts";
+import { mountFilters } from "./ui/filters.ts";
+import { mountPageHeader, setPageSubtitle, setPageSummary, setPageTitle } from "./ui/header.ts";
+import { closeModal, openModal } from "./ui/modal.ts";
+import { getCurrentPage, setActiveNavButton, showPage } from "./ui/pages.ts";
+// import du theme d'affichage (clair/sombre/suivre le système) : on l'initialise et on l'applique
+import { mountTheme } from "./ui/theme.ts";
+import { CATEGORY_TITLES } from "./ui/view.ts";
+import { mountWatchlist } from "./ui/watchlist.ts";
+import { createElement, getElement } from "./utils/dom.ts";
 
-<div class="ticks"></div>
+// La modale contient deux formulaires : l'ajout (recherche TMDB / RAWG) et la
+// modification d'un élément. On n'affiche que celui qui correspond au bouton cliqué.
+const addRoot = createElement("div", "modal__add");
+const editRoot = createElement("div", "modal__edit");
+getElement("#form-root", HTMLDivElement).append(addRoot, editRoot);
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src="${viteLogo}" alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://www.typescriptlang.org" target="_blank">
-          <img class="button-icon" src="${typescriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+const searchForm = mountSearchForm(addRoot, store, closeModal);
+const editForm = mountEditForm(editRoot, store, closeModal);
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+function openAddModal(): void {
+	addRoot.hidden = false;
+	editRoot.hidden = true;
+	openModal("Ajouter à la collection");
+}
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+function openEditModal(): void {
+	addRoot.hidden = true;
+	editRoot.hidden = false;
+	openModal("Modifier l'élément");
+}
+
+mountPageHeader(() => {
+	searchForm.reset();
+	openAddModal();
+});
+
+// Page d'accueil « Découvrir ». « Ajouter » sur une carte ouvre la modale avec le
+// mini-formulaire déjà pré-rempli : il ne reste qu'à choisir statut, note, etc.
+mountDiscover(getElement(".discover", HTMLElement), store, (item) => {
+	searchForm.prefill(item);
+	openAddModal();
+});
+
+const discoverButton = getElement('.nav__button[data-page="discover"]', HTMLButtonElement);
+
+function showDiscover(): void {
+	setActiveNavButton(discoverButton);
+	showPage("discover");
+	setPageTitle("Découvrir");
+	setPageSubtitle("Les films, séries et jeux les mieux notés");
+}
+
+discoverButton.addEventListener("click", showDiscover);
+
+// Un clic sur une catégorie (Ma collection, Films…) affiche la page collection
+const filters = mountFilters((view) => {
+	showPage("collection");
+	setPageTitle(CATEGORY_TITLES[view.category]);
+	watchlist.setView(view);
+});
+
+const watchlist = mountWatchlist(store, {
+	onEdit: (id) => {
+		if (editForm.open(id)) openEditModal();
+	},
+	onViewApplied: (items, visibleCount) => {
+		filters.update(items);
+		// Le résumé « X entrées » ne concerne que la page collection
+		if (getCurrentPage() === "collection") setPageSummary(visibleCount, items.length);
+	},
+});
+
+showDiscover();
+mountTheme();

@@ -6,13 +6,6 @@
 	gap: 2rem;
 }
 
-/* Un display défini en CSS l'emporte sur l'attribut hidden : ces règles, plus
-   précises, le rétablissent (page masquée par pages.ts, image qui ne charge pas) */
-.discover[hidden],
-.discover-card__cover[hidden] {
-	display: none;
-}
-
 .discover__section {
 	display: flex;
 	flex-direction: column;

@@ -33,7 +33,7 @@
 	line-height: 1.3;
 }
 
-.modal_header form {
+.modal__header form {
 	margin: 0;
 	flex-shrink: 0;
 }
@@ -108,12 +108,17 @@
 	font-size: 0.875rem;
 }
 
+/* la liste reste défilable sans pousser le formulaire trop bas */
 .search-results {
 	display: grid;
 	gap: 0.5rem;
+	max-height: 18rem;
 	margin: 0;
 	padding: 0;
+	overflow-y: auto;
 	list-style: none;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent) transparent;
 }
 
 .search-results:not(:empty) {
@@ -161,28 +166,6 @@
 .search-results__owned {
 	color: var(--text);
 	font-size: 0.75rem;
-}
-
-@media (max-width: 36rem) {
-	.modal {
-		padding: 1rem;
-	}
-
-	.search-form {
-		grid-template-columns: 1fr;
-	}
-
-	.search-results__button {
-		flex-wrap: wrap;
-	}
-}
-
-/* la liste reste défilable sans pousser le formulaire trop bas */
-.search-results {
-	max-height: 18rem;
-	overflow-y: auto;
-	scrollbar-width: thin;
-	scrollbar-color: var(--accent) transparent;
 }
 
 .search-panel:not([hidden]) + .search-add:has(.item-form:not([hidden])) {
@@ -235,8 +218,7 @@
 }
 
 .item-form select,
-.item-form textarea,
-.item-form input[type="number"] {
+.item-form textarea {
 	width: 100%;
 	min-width: 0;
 	min-height: 44px;
@@ -255,8 +237,7 @@
 }
 
 .item-form select:focus,
-.item-form textarea:focus,
-.item-form input[type="number"]:focus {
+.item-form textarea:focus {
 	outline: 2px solid var(--accent);
 	outline-offset: 2px;
 }
@@ -278,6 +259,12 @@
 	padding: 0;
 	color: var(--text-heading);
 	font-size: 0.875rem;
+}
+
+.item-form__stars {
+	display: flex;
+	gap: 0.125rem;
+	margin-top: 0.5rem;
 }
 
 .item-form__opinion label:has(input[type="checkbox"]) {
@@ -322,21 +309,21 @@
 	background: var(--accent-bg);
 }
 
-/* le display grid ne doit pas rendre les champs masqués visibles */
-.item-form[hidden],
-.item-form [hidden] {
-	display: none;
-}
-
 @media (max-width: 36rem) {
+	.modal {
+		padding: 1rem;
+	}
+
+	.search-form {
+		grid-template-columns: 1fr;
+	}
+
+	.search-results__button {
+		flex-wrap: wrap;
+	}
+
 	.item-form__submit,
 	.item-form__cancel {
 		grid-column: 1 / -1;
 	}
-}
-
-.item-form__stars {
-	display: flex;
-	gap: 0.125rem;
-	margin-top: 0.5rem;
 }

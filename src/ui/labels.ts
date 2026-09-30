@@ -11,9 +11,3 @@ export const TYPE_LABELS: Record<WatchlistItemType, string> = {
 	tv_show: "Série",
 	game: "Jeu",
 };
-
-export const TYPE_ICONS: Record<WatchlistItemType, string> = {
-	movie: "icon-movie",
-	tv_show: "icon-series",
-	game: "icon-game",
-};

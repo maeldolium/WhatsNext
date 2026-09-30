@@ -131,12 +131,6 @@
 	margin-right: 0.375rem;
 }
 
-.card__type-icon {
-	width: 0.875rem;
-	height: 0.875rem;
-	display: none;
-}
-
 /* Les étoiles remplies correspondent à la note personnelle. */
 .card__rating {
 	display: flex;
@@ -230,9 +224,4 @@
 
 .card__menu-item--danger {
 	color: light-dark(#b91c1c, #f87171);
-}
-
-/* Conserve les éléments masqués par le TypeScript. */
-.card [hidden] {
-	display: none;
 }

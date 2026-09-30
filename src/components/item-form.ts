@@ -25,17 +25,17 @@ const TEMPLATE = `
 			</select>
 		</label>
 		<!-- Avis : seulement pour un titre commencé (en cours ou terminé), voir updateOpinion() -->
-		<fieldset class="item-form__opinion">			
-		<legend>Ton avis</legend>
+		<fieldset class="item-form__opinion">
+			<legend>Ton avis</legend>
 			<div>
 				<span>Note</span>
 				<input name="rating" type="hidden" value="0" />
-				<div class="item-form__stars" role="group" aria-label="Note sur 5">
+				<div class="item-form__stars">
 					${[1, 2, 3, 4, 5]
 						.map(
 							(note) => `
-						<button type="button" class="card__star" data-note="${note}" aria-label="${note} sur 5" aria-pressed="false">
-							<svg class="card__star-icon" aria-hidden="true">
+						<button type="button" class="card__star" data-note="${note}">
+							<svg class="card__star-icon">
 								<use href="/sprite.svg#icon-star"></use>
 							</svg>
 						</button>
@@ -45,7 +45,6 @@ const TEMPLATE = `
 				</div>
 			</div>
 			<label><input name="favorite" type="checkbox" /> Favori</label>
-		</fieldset>
 		</fieldset>
 		<label>Notes <textarea name="notes" maxlength="${NOTES_MAX_LENGTH}"></textarea></label>
 		<button class="item-form__submit" type="submit"></button>
@@ -97,10 +96,7 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 		const rating = Number(ratingInput.value);
 
 		stars.forEach((star) => {
-			const note = Number(star.dataset.note);
-
-			star.classList.toggle("card__star--active", note <= rating);
-			star.setAttribute("aria-pressed", String(note === rating));
+			star.classList.toggle("card__star--active", Number(star.dataset.note) <= rating);
 		});
 	}
 
@@ -131,8 +127,8 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 		// Empêche le navigateur de recharger la page à l'envoi du formulaire
 		event.preventDefault();
 
-		// Les attributs HTML (min, max, step, maxlength) bloquent déjà les valeurs
-		// invalides : cet événement n'est déclenché que si le formulaire est valide.
+		// L'attribut maxlength bloque déjà les notes trop longues : cet événement
+		// n'est déclenché que si le formulaire est valide.
 		const data = new FormData(form);
 		options.onSubmit({
 			status: parseStatus(data.get("status")),
@@ -152,7 +148,7 @@ export function mountItemForm(container: Element, options: ItemFormOptions): Ite
 	return {
 		open(header, values) {
 			form.reset();
-			// Remet le champ caché à zéro pour un nouvel ajout.
+			// reset() ne remet pas à zéro un input hidden dont on a changé la valeur : on le fait à la main
 			ratingInput.value = "0";
 			// Pas d'image (chaîne vide) : on masque la balise plutôt qu'afficher une image cassée
 			cover.src = header.cover;

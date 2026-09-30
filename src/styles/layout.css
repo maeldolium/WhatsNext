@@ -202,10 +202,6 @@ svg {
 	color: var(--text-heading);
 }
 
-.theme-switch__option:hover {
-	color: var(--text-heading);
-}
-
 .theme-switch__option:has(.theme-switch__input:checked) {
 	background: var(--muted-bg);
 	color: var(--accent);
@@ -277,19 +273,15 @@ svg {
 	margin-bottom: 1.5rem;
 }
 
-/* Le display: flex ci-dessus l'emporte sur l'attribut hidden (utilisé par pages.ts) :
-   cette règle, plus précise, le rétablit */
-.toolbar[hidden] {
-	display: none;
-}
-
 .toolbar__row {
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	padding: 0;
-	background: transparent;
-	border: 0;
+}
+
+.toolbar__search,
+.toolbar__sort {
+	position: relative;
 }
 
 .toolbar__search {
@@ -297,148 +289,86 @@ svg {
 	min-width: 0;
 }
 
-.toolbar__search-input {
-	width: 100%;
-	height: 44px;
-	box-sizing: border-box;
-	padding: 0 1rem 0 2.75rem;
-	color: var(--text-heading);
-	background-color: var(--surface);
-	border: 1px solid var(--border);
-	border-radius: 10px;
-	font: inherit;
-	font-size: 0.875rem;
-	outline: none;
-
-	/* Icône de recherche */
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%2398958d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: 0.875rem center;
-	background-size: 18px;
-
-	transition:
-		border-color 0.2s ease,
-		box-shadow 0.2s ease;
-}
-
-.toolbar__search-input::placeholder {
-	color: var(--text);
-}
-
-.toolbar__search-input:hover {
-	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
-}
-
-.toolbar__search-input:focus {
-	border-color: var(--accent);
-	box-shadow: 0 0 0 2px var(--accent-bg);
-}
-
 .toolbar__sort {
 	flex: 0 0 220px;
-	width: 220px;
-	padding: 0;
-	margin: 0;
-	background: transparent;
-	border: 0;
 }
 
-.toolbar__sort select {
-	appearance: none;
-	-webkit-appearance: none;
-	width: 100%;
-	height: 44px;
-	box-sizing: border-box;
-	padding: 0 2.5rem 0 2.75rem;
+/* Icône posée par-dessus le champ, à gauche */
+.toolbar__search-icon,
+.toolbar__sort-icon {
+	position: absolute;
+	top: 50%;
+	left: 0.875rem;
+	translate: 0 -50%;
 	color: var(--text);
-	background-color: var(--surface);
-	border: 1px solid var(--border);
-	border-radius: 10px;
-	font: inherit;
-	font-size: 0.875rem;
-	font-weight: 600;
-	cursor: pointer;
-	outline: none;
-
-	/* Icône de tri + chevron */
-	background-image:
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%2398958d' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M3 6h18'/%3E%3Cpath d='M3 12h12'/%3E%3Cpath d='M3 18h6'/%3E%3C/svg%3E"),
-		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2398958d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-	background-repeat: no-repeat, no-repeat;
-	background-position:
-		1.15rem center,
-		calc(100% - 1.15rem) center;
-	background-size: 21px, 17px;
-
-	transition:
-		border-color 0.2s ease,
-		box-shadow 0.2s ease;
-}
-
-.toolbar__sort select option {
-	padding-left: 0.75rem;
-	text-align: left;
-}
-
-.toolbar__sort select:hover {
-	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
-}
-
-.toolbar__sort select:focus {
-	border-color: var(--accent);
-	box-shadow: 0 0 0 2px var(--accent-bg);
+	pointer-events: none;
 }
 
 .toolbar__genre {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
-	width: fit-content;
-	max-width: 100%;
 	font-size: 0.875rem;
-	padding: 0;
-	margin: 0;
-	background: transparent;
-	border: 0;
-	color: var(--text);
-	flex: 0 0 auto;
 }
 
-.toolbar__genre select {
-	appearance: none;
-	-webkit-appearance: none;
-	width: 190px;
-	max-width: 100%;
+.toolbar__search-input,
+.toolbar__sort-select,
+.toolbar__genre-select {
+	width: 100%;
 	height: 44px;
-	box-sizing: border-box;
-	flex: 0 1 190px;
-	padding: 0 2.5rem 0 0.75rem;
-	color: var(--text-heading);
-	background-color: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: 10px;
-	font: inherit;
+	background-color: var(--surface);
+	color: var(--text-heading);
 	font-size: 0.875rem;
-	cursor: pointer;
 	outline: none;
-
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2398958d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: calc(100% - 1rem) center;
-	background-size: 14px;
 
 	transition:
 		border-color 0.2s ease,
 		box-shadow 0.2s ease;
 }
 
-.toolbar__genre select:hover {
+.toolbar__search-input:hover,
+.toolbar__sort-select:hover,
+.toolbar__genre-select:hover {
 	border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
 }
 
-.toolbar__genre select:focus {
+.toolbar__search-input:focus,
+.toolbar__sort-select:focus,
+.toolbar__genre-select:focus {
 	border-color: var(--accent);
 	box-shadow: 0 0 0 2px var(--accent-bg);
+}
+
+.toolbar__search-input {
+	padding: 0 1rem 0 2.75rem;
+}
+
+.toolbar__search-input::placeholder {
+	color: var(--text);
+}
+
+/* Chevron dessiné en fond, à la place de la flèche native */
+.toolbar__sort-select,
+.toolbar__genre-select {
+	appearance: none;
+	padding: 0 2.5rem 0 0.75rem;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2398958d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: calc(100% - 1rem) center;
+	background-size: 14px;
+	cursor: pointer;
+}
+
+.toolbar__sort-select {
+	padding-left: 2.75rem;
+	color: var(--text);
+	font-weight: 600;
+}
+
+.toolbar__genre-select {
+	width: 190px;
 }
 
 .status-filter button {
@@ -463,11 +393,6 @@ svg {
 		border-color 0.2s ease;
 }
 
-.add-button {
-	color: var(--accent);
-	border: 1px solid var(--accent);
-}
-
 .status-filter button:hover {
 	color: var(--accent);
 	border-color: var(--accent);
@@ -477,13 +402,6 @@ svg {
 	color: #fff;
 	background-color: var(--accent);
 	border-color: var(--accent);
-}
-
-.modal__header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 1rem;
 }
 
 /* Notification de confirmation (ui/toast.ts) : placement uniquement, l'apparence
@@ -522,27 +440,16 @@ svg {
 		flex-wrap: wrap;
 	}
 
-	.toolbar__search {
-		flex-basis: 100%;
-		min-width: 100%;
-	}
-
+	.toolbar__search,
 	.toolbar__sort {
-		padding: 0 2.5rem 0 2.75rem;
-	}
-
-	.toolbar__sort select {
-		width: 100%;
+		flex-basis: 100%;
 	}
 
 	.toolbar__genre {
-		width: 100%;
 		flex-wrap: wrap;
 	}
 
-	.toolbar__genre select {
+	.toolbar__genre-select {
 		width: 100%;
-		max-width: none;
-		flex: 1;
 	}
 }

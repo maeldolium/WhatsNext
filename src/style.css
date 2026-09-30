@@ -14,10 +14,10 @@
 	--text-heading: light-dark(#192735, #f4f1eb);
 	--text: light-dark(#596674, #a6b1bc);
 	--border: light-dark(rgba(25, 39, 53, 0.14), rgba(166, 177, 188, 0.16));
+	--shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* Plus tard, le TypeScript forcera ces valeurs
-   lorsqu'on choisira Clair / Sombre / Auto. */
+/* Thème forcé par ui/theme.ts quand on choisit Clair ou Sombre (Auto = celui du système) */
 :root[data-theme="light"] {
 	color-scheme: light;
 }
@@ -60,6 +60,13 @@ textarea {
 
 button {
 	cursor: pointer;
+}
+
+/* Un display défini en CSS (flex, grid…) l'emporte sur l'attribut hidden :
+   cette règle le rétablit partout (pages.ts, formulaires, cartes…) */
+[hidden] {
+	/* biome-ignore lint/complexity/noImportantStyles: doit gagner sur les display des classes */
+	display: none !important;
 }
 
 h1,
